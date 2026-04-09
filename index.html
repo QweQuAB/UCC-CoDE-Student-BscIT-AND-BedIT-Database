@@ -2056,7 +2056,6 @@ function App(){
 
   // Dynamic admin password (stored in localStorage)
   const [adminPassword,setAdminPassword] = useState(()=>localStorage.getItem("admin_pw")||"StAnne2025");
-  const [courseNav,setCourseNav] = useState(null); // {courseKey, group} for rep card navigation
 
   // Portal appearance settings
   const DEFAULT_SETTINGS = {portalTitle:"UCC CoDE",portalSub:"BSc IT \u0026 BEd IT \u00b7 Group \u0026 Assignment Tracker",accentColor:"#1b6ca8",goldColor:"#f0a500",navyColor:"#0d1b2a"};
