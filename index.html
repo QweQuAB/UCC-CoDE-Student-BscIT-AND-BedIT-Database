@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UCC CoDE — BSc IT &amp; BEd IT Student Database</title>
+
+  <!-- Firebase SDK (v9 compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+  <!-- React 18 -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel (JSX in browser) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- SheetJS (Excel export) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0d1b2a;
+      --teal:  #1b6ca8;
+      --gold:  #f0a500;
+      --light: #f4f7fb;
+      --white: #ffffff;
+      --border:#dde3ec;
+      --text:  #1a2332;
+      --sub:   #5a6a7e;
+      --green: #27ae60;
+      --red:   #c0392b;
+    }
+    body { font-family: 'Georgia','Times New Roman',serif; background: var(--light); color: var(--text); min-height: 100vh; }
+    button { cursor: pointer; }
+    input, select, textarea { font-family: inherit; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--light); }
+    ::-webkit-scrollbar-thumb { background: #c8d4e3; border-radius: 3px; }
+    /* ── LAYOUT ── */
+    #root { display: flex; flex-direction: column; min-height: 100vh; }
+    .hdr { background: var(--navy); position: sticky; top: 0; z-index: 100; }
+    .hdr-inner { max-width: 1400px; margin: 0 auto; padding: 13px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .stripe { height: 3px; background: linear-gradient(90deg,var(--gold),var(--teal)); }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-mk { background: var(--gold); color: var(--navy); font-weight: 900; font-size: 12px; padding: 5px 8px; border-radius: 4px; letter-spacing: 1px; }
+    .logo-title { color: #fff; font-weight: 700; font-size: 15px; line-height: 1.2; }
+    .logo-sub { color: #8899bb; font-size: 11px; font-family: Arial,sans-serif; }
+    nav { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .nav-btn { background: transparent; border: 1px solid #ffffff22; color: #ccd; padding: 7px 15px; border-radius: 6px; font-size: 13px; font-family: Georgia,serif; transition: all .15s; }
+    .nav-btn:hover { border-color: #ffffff44; background: #ffffff11; }
+    .nav-btn.on { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .logout-btn { background: transparent; border: 1px solid #c0392b55; color: #e77; padding: 7px 12px; border-radius: 6px; font-size: 12px; font-family: Georgia,serif; }
+    main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; flex: 1; width: 100%; }
+    footer { text-align: center; padding: 22px; color: #aaa; font-size: 12px; font-family: Arial,sans-serif; border-top: 1px solid var(--border); margin-top: 40px; }
+    /* ── TYPOGRAPHY ── */
+    h1 { font-size: 24px; color: var(--navy); font-weight: 700; }
+    .lead { color: var(--sub); font-size: 13px; font-family: Arial,sans-serif; margin-top: 6px; }
+    /* ── CONTROLS ── */
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .search-wrap { flex: 1; min-width: 180px; display: flex; align-items: center; gap: 8px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 0 12px; color: var(--sub); }
+    .search-wrap svg { flex-shrink: 0; }
+    .search-input { flex: 1; border: none; outline: none; padding: 9px 0; font-size: 14px; background: transparent; font-family: Georgia,serif; color: var(--text); }
+    .x-small { background: none; border: none; font-size: 15px; color: var(--sub); padding: 0 2px; }
+    select.sel { padding: 9px 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--white); font-size: 13px; color: var(--text); font-family: Georgia,serif; }
+    /* ── BUTTONS ── */
+    .btn-print  { background: #fff; border: 1px solid var(--border); color: var(--text); padding: 9px 16px; border-radius: 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 7px; font-family: Georgia,serif; }
+    .btn-excel  { background: #e8f7ee; border: 1px solid #b7dfc6; color: #217346; padding: 9px 16px; border-radius: 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 7px; font-family: Georgia,serif; }
+    .btn-import { background: #fff7e6; border: 1px solid #f5cfa0; color: #b7680a; padding: 9px 16px; border-radius: 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 7px; font-family: Georgia,serif; }
+    .btn-add    { background: var(--gold); color: var(--navy); border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 7px; font-family: Georgia,serif; }
+    .btn-save   { background: var(--teal); color: #fff; border: none; padding: 10px 22px; border-radius: 7px; font-size: 14px; font-weight: 600; font-family: Georgia,serif; }
+    .btn-cancel { background: var(--light); border: 1px solid var(--border); padding: 9px 18px; border-radius: 7px; font-size: 14px; font-family: Georgia,serif; color: var(--text); }
+    .btn-edit   { background: #e8f4fd; border: none; color: var(--teal); padding: 6px 8px; border-radius: 6px; }
+    .btn-del    { background: #fdeaea; border: none; color: var(--red); padding: 6px 8px; border-radius: 6px; }
+    /* ── TABLE ── */
+    .tbl-wrap { overflow-x: auto; background: var(--white); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: Arial,sans-serif; }
+    thead tr { background: var(--navy); }
+    th { color: #fff; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; }
+    td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr.even td { background: #f9fbfd; }
+    .grp-badge { background: #e8f4fd; color: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .grp-hdr td { background: #f0f4fa; color: var(--navy); font-weight: 700; font-size: 12px; letter-spacing: .5px; }
+    .dash { color: #bbb; }
+    /* ── CARDS ── */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr)); gap: 12px; }
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .card-hdr { display: flex; align-items: center; gap: 13px; padding: 15px 17px; cursor: pointer; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,var(--teal),var(--navy)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+    .card-name { font-weight: 700; font-size: 15px; }
+    .card-sub  { color: var(--sub); font-size: 12px; font-family: Arial,sans-serif; margin-top: 2px; }
+    .card-body { padding: 0 17px 15px; border-top: 1px solid var(--border); }
+    .chip { margin: 10px 0 0; background: var(--light); border-radius: 7px; padding: 9px 12px; }
+    .chip-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+    .chip-course { font-weight: 700; font-size: 13px; color: var(--navy); }
+    .chip-code { font-size: 10px; color: var(--sub); }
+    .chip-grp { background: var(--teal); color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 700; margin-left: auto; }
+    .chip-topic { font-size: 12px; color: #444; font-style: italic; font-family: Arial,sans-serif; }
+    /* ── COURSE TABS ── */
+    .course-tabs-wrap { overflow-x: auto; margin-bottom: 20px; }
+    .course-tabs { display: flex; gap: 4px; min-width: max-content; }
+    .c-tab { background: var(--white); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-size: 13px; color: var(--sub); font-family: Georgia,serif; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+    .c-tab.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .c-tab-code { font-size: 10px; opacity: .7; }
+    .badge { background: var(--light); color: var(--sub); font-size: 10px; padding: 1px 6px; border-radius: 10px; font-family: Arial,sans-serif; font-weight: 700; }
+    .c-tab.on .badge { background: rgba(255,255,255,.2); color: #fff; }
+    /* ── MODAL ── */
+    .overlay { position: fixed; inset: 0; background: #00000066; display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
+    .modal { background: var(--white); border-radius: 12px; width: 100%; max-width: 640px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px #00000044; }
+    .modal-head { padding: 17px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-weight: 700; font-size: 16px; color: var(--navy); }
+    .x-btn { background: none; border: none; font-size: 18px; color: var(--sub); }
+    .m-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 24px; }
+    .m-tab { background: none; border: none; padding: 12px 18px; font-size: 13px; color: var(--sub); font-family: Georgia,serif; border-bottom: 2px solid transparent; }
+    .m-tab.on { color: var(--teal); border-bottom: 2px solid var(--teal); font-weight: 600; }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+    .modal-foot { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+    /* ── FORMS ── */
+    .form-stack { display: flex; flex-direction: column; gap: 10px; }
+    label.lbl { font-weight: 600; font-size: 13px; color: var(--navy); font-family: Arial,sans-serif; }
+    .inp { padding: 10px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 14px; outline: none; font-family: Georgia,serif; color: var(--text); width: 100%; }
+    .inp:focus { border-color: var(--teal); }
+    .sm-inp { font-size: 13px; padding: 7px 10px; }
+    .c-row { border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 14px; }
+    .c-label { font-size: 13px; color: var(--navy); margin-bottom: 8px; font-family: Arial,sans-serif; }
+    .c-fields { display: flex; gap: 12px; flex-wrap: wrap; }
+    .f-tag { display: block; font-size: 10px; color: var(--sub); margin-bottom: 4px; font-family: Arial,sans-serif; text-transform: uppercase; }
+    /* ── LOGIN ── */
+    .login-wrap { display: flex; justify-content: center; padding-top: 80px; }
+    .login-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 40px 36px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 14px; }
+    /* ── MISC ── */
+    .empty { text-align: center; padding: 60px 20px; color: var(--sub); font-size: 15px; font-family: Arial,sans-serif; }
+    .stat  { color: var(--sub); font-size: 13px; font-family: Arial,sans-serif; margin-bottom: 14px; }
+    .err   { color: var(--red); font-size: 12px; text-align: center; font-family: Arial,sans-serif; }
+    .admin-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .admin-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .cv-controls { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+    .saving-toast { position: fixed; bottom: 20px; right: 20px; background: var(--navy); color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-family: Arial,sans-serif; z-index: 9999; box-shadow: 0 4px 20px #00000033; }
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ffffff44; border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* CONFIG NOTICE */
+    .config-notice { background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px; padding: 20px 24px; margin-bottom: 24px; font-family: Arial,sans-serif; }
+    .config-notice h3 { color: #856404; margin-bottom: 8px; }
+    .config-notice p  { color: #664d03; font-size: 13px; line-height: 1.6; }
+    .config-notice code { background: #fff; border: 1px solid #ffc107; border-radius: 3px; padding: 1px 5px; font-size: 12px; }
+    @media (max-width: 600px) {
+      main { padding: 20px 16px; }
+      .hdr-inner { padding: 10px 16px; }
+      .logo-title { font-size: 13px; }
+      h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+  ⚙️  FIREBASE CONFIGURATION
+  ══════════════════════════════════════════════════════════════════════════
+  STEP 1: Go to https://console.firebase.google.com
+  STEP 2: Click "Add project" → name it (e.g. "ucc-code-db") → Continue
+  STEP 3: In your project, click "Firestore Database" → Create database
+           Choose "Start in TEST mode" → Select closest region → Enable
+  STEP 4: Click ⚙️ Project Settings → scroll to "Your apps" → click </> (Web)
+           Register app → copy the firebaseConfig object below
+  STEP 5: Replace the placeholder values in the firebaseConfig object below
+  ══════════════════════════════════════════════════════════════════════════ -->
+<script>
+  const firebaseConfig = {
+    apiKey:            "AIzaSyBlHk47hmuUlMMExd1_hL1GmDkLO_423eE",
+    authDomain:        "database-ucc-it.firebaseapp.com",
+    projectId:         "database-ucc-it",
+    storageBucket:     "database-ucc-it.firebasestorage.app",
+    messagingSenderId: "1021905819291",
+    appId:             "1:1021905819291:web:d7a1196dd4f3bc73d6983e",
+    measurementId:     "G-HYV3LXB1KB"
+  };
+
+  let db = null;
+  let firebaseReady = false;
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    // Test if config is real (not placeholders)
+    firebaseReady = firebaseConfig.apiKey.startsWith("AIza");
+  } catch(e) {
+    console.warn("Firebase init failed:", e);
+  }
+</script>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONSTANTS
+// ─────────────────────────────────────────────────────────────────────────────
+const COURSES = [
+  { key:"africanStudies", label:"African Studies",      code:"ASP 401" },
+  { key:"commSkills",     label:"Communicative Skills", code:"CMS 107/108" },
+  { key:"infoLiteracy",   label:"Information Literacy", code:"INF 101" },
+  { key:"management",     label:"Intro to Management",  code:"INF 105" },
+  { key:"softwareSuite",  label:"Software Suite",       code:"ICT 103" },
+  { key:"introComputing", label:"Intro to Computing",   code:"ICT 101" },
+  { key:"mathsComputing", label:"Maths for Computing",  code:"MAT 101" },
+];
+
+const PROGRAMS = [
+  "BSc Information Technology",
+  "BSc IT (Distance)",
+  "BEd Information Technology",
+  "BSc Computer Science",
+  "BSc Information Systems",
+  "BSc Accounting",
+  "BSc Business Administration",
+  "Other / Unknown",
+];
+
+const ADMIN_PASSWORD = "StAnne2025"; // ← Change this to something personal
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function emptyCourses() { const c={}; COURSES.forEach(x=>{c[x.key]={group:"",topic:""}}); return c; }
+function emptyStudent() { return {id:uid(),name:"",program:"BSc Information Technology",indexNumber:"",courses:emptyCourses()}; }
+
+// LOCAL FALLBACK (when Firebase not configured)
+const LS_KEY = "ucc_students_local";
+function lsGet() { try { const r=localStorage.getItem(LS_KEY); return r?JSON.parse(r):[]; } catch { return []; } }
+function lsSet(d) { try { localStorage.setItem(LS_KEY,JSON.stringify(d)); } catch {} }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PRINT UTILITY
+// ─────────────────────────────────────────────────────────────────────────────
+function printTable(html, title) {
+  const w = window.open("","_blank","width=900,height=700");
+  if (!w) { alert("Please allow pop-ups to use Print / PDF."); return; }
+  w.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>
+    *{box-sizing:border-box;margin:0;padding:0} body{font-family:'Times New Roman',serif;padding:32px;color:#111}
+    h1{font-size:18px;margin-bottom:4px} .sub{font-size:12px;color:#555;margin-bottom:20px}
+    table{width:100%;border-collapse:collapse;font-size:13px} thead tr{background:#0d1b2a;color:#fff}
+    th{padding:9px 12px;text-align:left;font-size:12px;letter-spacing:.5px} td{padding:8px 12px;border-bottom:1px solid #ddd}
+    tr:nth-child(even) td{background:#f5f7fa} .g{background:#e8f4fd;color:#1b6ca8;padding:2px 7px;border-radius:3px;font-weight:700;font-size:11px}
+    .gh td{background:#f0f4fa;font-weight:700;font-size:12px;color:#0d1b2a;letter-spacing:.5px}
+    .foot{margin-top:24px;font-size:11px;color:#888} @media print{body{padding:16px}}
+  </style></head><body>
+    <h1>${title}</h1>
+    <div class="sub">University of Cape Coast – College of Distance Education &nbsp;|&nbsp; Printed: ${new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"})}</div>
+    ${html}
+    <div class="foot">UCC CoDE Student Group Database &nbsp;·&nbsp; JB IT Solutions &nbsp;·&nbsp; Use Ctrl+P or ⌘+P then "Save as PDF"</div>
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>{w.focus();w.print();},500);
+}
+
+function buildPrintHTML(students, courseKey, groupFilter) {
+  const course = COURSES.find(c=>c.key===courseKey);
+  const sorted = [...students]
+    .filter(s=>{ const c=s.courses?.[courseKey]; if(!c?.group)return false; if(groupFilter&&groupFilter!=="all"&&c.group!==groupFilter)return false; return true; })
+    .sort((a,b)=>{ const ga=a.courses[courseKey]?.group||"",gb=b.courses[courseKey]?.group||""; return ga!==gb?ga.localeCompare(gb,undefined,{numeric:true}):a.name.localeCompare(b.name); });
+  const byGrp={};
+  sorted.forEach(s=>{ const g=s.courses[courseKey].group; if(!byGrp[g])byGrp[g]=[]; byGrp[g].push(s); });
+  let rows="",n=0;
+  Object.entries(byGrp).forEach(([g,list])=>{
+    if(groupFilter==="all") rows+=`<tr class="gh"><td colspan="6">Group ${g}</td></tr>`;
+    list.forEach(s=>{ n++; rows+=`<tr><td>${n}</td><td>${s.name}</td><td>${s.indexNumber||"—"}</td><td>${s.program||"—"}</td><td><span class="g">Group ${s.courses[courseKey].group}</span></td><td>${s.courses[courseKey].topic||"—"}</td></tr>`; });
+  });
+  const gLabel = groupFilter&&groupFilter!=="all"?` — Group ${groupFilter}`:"";
+  return { title:`${course.label} (${course.code})${gLabel}`, html:`<table><thead><tr><th>#</th><th>Full Name</th><th>Index No.</th><th>Programme</th><th>Group</th><th>Research Topic</th></tr></thead><tbody>${rows}</tbody></table>` };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXCEL EXPORT
+// ─────────────────────────────────────────────────────────────────────────────
+function exportCourseXLSX(students, courseKey, groupFilter) {
+  const course=COURSES.find(c=>c.key===courseKey);
+  const rows=[...students]
+    .filter(s=>{ const c=s.courses?.[courseKey]; if(!c?.group)return false; if(groupFilter&&groupFilter!=="all"&&c.group!==groupFilter)return false; return true; })
+    .sort((a,b)=>{ const ga=a.courses[courseKey]?.group||"",gb=b.courses[courseKey]?.group||""; return ga!==gb?ga.localeCompare(gb,undefined,{numeric:true}):a.name.localeCompare(b.name); })
+    .map((s,i)=>({"#":i+1,"Full Name":s.name,"Index Number":s.indexNumber||"","Programme":s.program||"","Group":s.courses[courseKey]?.group||"","Research Topic":s.courses[courseKey]?.topic||""}));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws["!cols"]=[{wch:4},{wch:28},{wch:20},{wch:28},{wch:8},{wch:40}];
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,course.label.slice(0,31));
+  const suf=groupFilter&&groupFilter!=="all"?`_Grp${groupFilter}`:"";
+  XLSX.writeFile(wb,`UCC_CoDE_${course.code.replace(/\//g,"-")}${suf}.xlsx`);
+}
+
+function exportAllXLSX(students) {
+  const wb=XLSX.utils.book_new();
+  const master=students.map((s,i)=>{ const r={"#":i+1,"Full Name":s.name,"Index Number":s.indexNumber||"","Programme":s.program||""}; COURSES.forEach(c=>{r[`${c.code} Group`]=s.courses?.[c.key]?.group||"";r[`${c.code} Topic`]=s.courses?.[c.key]?.topic||"";}); return r; });
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(master),"All Students");
+  COURSES.forEach(c=>{ const rows=[...students].filter(s=>s.courses?.[c.key]?.group).sort((a,b)=>a.courses[c.key].group.localeCompare(b.courses[c.key].group,undefined,{numeric:true})||a.name.localeCompare(b.name)).map((s,i)=>({"#":i+1,"Full Name":s.name,"Index Number":s.indexNumber||"","Programme":s.program||"","Group":s.courses[c.key]?.group||"","Research Topic":s.courses[c.key]?.topic||""})); if(rows.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),c.label.slice(0,31)); });
+  XLSX.writeFile(wb,"UCC_CoDE_StudentDatabase.xlsx");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SVG ICONS
+// ─────────────────────────────────────────────────────────────────────────────
+const Ico=({d,s=15})=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width={s} height={s}><path d={d}/></svg>;
+const SearchIco=()=><Ico d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>;
+const PlusIco  =()=><Ico d="M12 5v14M5 12h14"/>;
+const EditIco  =()=><Ico d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" s={13}/>;
+const DelIco   =()=><Ico d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" s={13}/>;
+const PrintIco =()=><Ico d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/>;
+const ExcelIco =()=><Ico d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM14 2v6h6M8 13h2m4 0h2M8 17h2m4 0h2"/>;
+const LockIco  =()=><Ico d="M7 11V7a5 5 0 0 1 10 0v4M3 11h18v11H3z"/>;
+const ChevIco  =()=><Ico d="M6 9l6 6 6-6"/>;
+const ImportIco=()=><Ico d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>;
+const DBIco    =()=><Ico d="M12 2a9 3 0 0 1 9 3c0 1.657-4.03 3-9 3S3 6.657 3 5a9 3 0 0 1 9-3zM3 5v4c0 1.657 4.03 3 9 3s9-1.343 9-3V5M3 9v4c0 1.657 4.03 3 9 3s9-1.343 9-3V9M3 13v4c0 1.657 4.03 3 9 3s9-1.343 9-3v-4"/>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FIREBASE DATABASE LAYER
+// ─────────────────────────────────────────────────────────────────────────────
+function useStudents() {
+  const [students,  setStudents]  = useState([]);
+  const [loading,   setLoading]   = useState(true);
+  const [saving,    setSaving]    = useState(false);
+  const [dbMode,    setDbMode]    = useState("local"); // "firebase" | "local"
+
+  useEffect(()=>{
+    if(window.firebaseReady && window.db) {
+      setDbMode("firebase");
+      // Real-time listener
+      const unsub = window.db.collection("students").onSnapshot(
+        snap => {
+          const docs = snap.docs.map(d=>({...d.data(), _docId:d.id}));
+          setStudents(docs);
+          setLoading(false);
+        },
+        err => {
+          console.error("Firestore error:", err);
+          // Fallback to local
+          setStudents(lsGet());
+          setLoading(false);
+          setDbMode("local");
+        }
+      );
+      return ()=>unsub();
+    } else {
+      setStudents(lsGet());
+      setLoading(false);
+    }
+  },[]);
+
+  const saveStudent = useCallback(async (student) => {
+    setSaving(true);
+    try {
+      if(dbMode==="firebase" && window.db) {
+        const {_docId,...data} = student;
+        // Use student.id as document ID for consistent lookup
+        await window.db.collection("students").doc(student.id).set(data);
+        // Snapshot listener will update state automatically
+      } else {
+        setStudents(prev=>{
+          const idx=prev.findIndex(x=>x.id===student.id);
+          const next = idx>=0 ? [...prev.slice(0,idx),student,...prev.slice(idx+1)] : [...prev,student];
+          lsSet(next); return next;
+        });
+      }
+    } finally { setSaving(false); }
+  }, [dbMode]);
+
+  const deleteStudent = useCallback(async (id) => {
+    setSaving(true);
+    try {
+      if(dbMode==="firebase" && window.db) {
+        await window.db.collection("students").doc(id).delete();
+      } else {
+        setStudents(prev=>{ const next=prev.filter(s=>s.id!==id); lsSet(next); return next; });
+      }
+    } finally { setSaving(false); }
+  }, [dbMode]);
+
+  const importStudents = useCallback(async (list) => {
+    if(!window.confirm(`Add ${list.length} students to the database?`)) return;
+    setSaving(true);
+    try {
+      if(dbMode==="firebase" && window.db) {
+        const batch = window.db.batch();
+        list.forEach(s=>{ const ref=window.db.collection("students").doc(s.id); batch.set(ref,s); });
+        await batch.commit();
+      } else {
+        setStudents(prev=>{ const next=[...prev,...list]; lsSet(next); return next; });
+      }
+    } finally { setSaving(false); }
+  }, [dbMode]);
+
+  return { students, loading, saving, dbMode, saveStudent, deleteStudent, importStudents };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STUDENT MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+function StudentModal({student,onSave,onClose}){
+  const [form,setForm]=useState(()=>JSON.parse(JSON.stringify(student)));
+  const [tab,setTab]=useState("info");
+  const upd=(f,v)=>setForm(p=>({...p,[f]:v}));
+  const updC=(ck,f,v)=>setForm(p=>({...p,courses:{...p.courses,[ck]:{...p.courses[ck],[f]:v}}}));
+  return (
+    <div className="overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal">
+        <div className="modal-head">
+          <span className="modal-title">{student.name?"✏️ Edit — "+student.name:"➕ Add New Student"}</span>
+          <button className="x-btn" onClick={onClose}>✕</button>
+        </div>
+        <div className="m-tabs">
+          {[["info","👤 Student Info"],["courses","📚 Course Groups"]].map(([k,l])=>(
+            <button key={k} className={"m-tab"+(tab===k?" on":"")} onClick={()=>setTab(k)}>{l}</button>
+          ))}
+        </div>
+        <div className="modal-body">
+          {tab==="info" && (
+            <div className="form-stack">
+              <label className="lbl">Full Name <span style={{color:"var(--red)"}}>*</span></label>
+              <input className="inp" value={form.name} onChange={e=>upd("name",e.target.value)} placeholder="Full name"/>
+              <label className="lbl">Index / Student Number</label>
+              <input className="inp" value={form.indexNumber} onChange={e=>upd("indexNumber",e.target.value)} placeholder="e.g. UCC/CoDE/IT/001"/>
+              <label className="lbl">Programme</label>
+              <select className="inp" value={form.program} onChange={e=>upd("program",e.target.value)}>
+                {PROGRAMS.map(p=><option key={p}>{p}</option>)}
+              </select>
+            </div>
+          )}
+          {tab==="courses" && COURSES.map(c=>(
+            <div key={c.key} className="c-row">
+              <div className="c-label"><b>{c.label}</b> <span style={{color:"#8899bb",fontSize:11}}>({c.code})</span></div>
+              <div className="c-fields">
+                <div style={{flex:"0 0 110px"}}>
+                  <span className="f-tag">Group</span>
+                  <input className="inp sm-inp" value={form.courses[c.key]?.group||""} onChange={e=>updC(c.key,"group",e.target.value)} placeholder="e.g. 3"/>
+                </div>
+                <div style={{flex:1}}>
+                  <span className="f-tag">Research Topic / Assignment Title</span>
+                  <input className="inp sm-inp" value={form.courses[c.key]?.topic||""} onChange={e=>updC(c.key,"topic",e.target.value)} placeholder="Topic title…"/>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="modal-foot">
+          <button className="btn-cancel" onClick={onClose}>Cancel</button>
+          <button className="btn-save" onClick={()=>{if(!form.name.trim()){alert("Name is required.");return;}onSave(form);}}>💾 Save Student</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STUDENT CARD
+// ─────────────────────────────────────────────────────────────────────────────
+function StudentCard({student}){
+  const [open,setOpen]=useState(false);
+  const assigned=COURSES.filter(c=>student.courses?.[c.key]?.group);
+  return (
+    <div className="card">
+      <div className="card-hdr" onClick={()=>setOpen(o=>!o)}>
+        <div className="avatar">{student.name[0].toUpperCase()}</div>
+        <div style={{flex:1}}>
+          <div className="card-name">{student.name}</div>
+          <div className="card-sub">{student.program||"Programme unknown"}{student.indexNumber?` · ${student.indexNumber}`:""}</div>
+          <div className="card-sub" style={{color:"var(--teal)"}}>{assigned.length} course{assigned.length!==1?"s":""} assigned</div>
+        </div>
+        <div style={{color:"var(--sub)",transition:"transform .2s",transform:open?"rotate(180deg)":"rotate(0)"}}><ChevIco/></div>
+      </div>
+      {open && (
+        <div className="card-body">
+          {assigned.length===0 && <p className="lead" style={{paddingTop:10}}>No groups assigned yet.</p>}
+          {assigned.map(c=>{
+            const d=student.courses[c.key];
+            return (
+              <div key={c.key} className="chip">
+                <div className="chip-top">
+                  <span className="chip-course">{c.label}</span>
+                  <span className="chip-code">{c.code}</span>
+                  <span className="chip-grp">Group {d.group}</span>
+                </div>
+                {d.topic&&<div className="chip-topic">{d.topic}</div>}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COURSE VIEW
+// ─────────────────────────────────────────────────────────────────────────────
+function CourseView({students}){
+  const [active,setActive]=useState(COURSES[0].key);
+  const [grpFilter,setGrpFilter]=useState("all");
+  const [search,setSearch]=useState("");
+  useEffect(()=>{setGrpFilter("all");setSearch("");},[active]);
+  const course=COURSES.find(c=>c.key===active);
+  const groups=useMemo(()=>{
+    const gs=new Set(); students.forEach(s=>{const g=s.courses?.[active]?.group;if(g)gs.add(g);}); return["all",...[...gs].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}))];
+  },[students,active]);
+  const visible=useMemo(()=>{
+    return[...students].filter(s=>{
+      const c=s.courses?.[active]; if(!c?.group)return false;
+      if(grpFilter!=="all"&&c.group!==grpFilter)return false;
+      if(search){const q=search.toLowerCase();return s.name.toLowerCase().includes(q)||(s.indexNumber||"").toLowerCase().includes(q)||(c.topic||"").toLowerCase().includes(q);}
+      return true;
+    }).sort((a,b)=>{const ga=a.courses[active].group,gb=b.courses[active].group;return ga!==gb?ga.localeCompare(gb,undefined,{numeric:true}):a.name.localeCompare(b.name);});
+  },[students,active,grpFilter,search]);
+  const byGrp=useMemo(()=>{const m={};visible.forEach(s=>{const g=s.courses[active].group;if(!m[g])m[g]=[];m[g].push(s);});return m;},[visible,active]);
+  const doPrint=()=>{const{html,title}=buildPrintHTML(students,active,grpFilter);printTable(html,title);};
+  return (
+    <div>
+      <div className="course-tabs-wrap">
+        <div className="course-tabs">
+          {COURSES.map(c=>{
+            const cnt=students.filter(s=>s.courses?.[c.key]?.group).length;
+            return(
+              <button key={c.key} className={"c-tab"+(active===c.key?" on":"")} onClick={()=>setActive(c.key)}>
+                <span style={{fontWeight:600}}>{c.label}</span>
+                <span className="c-tab-code">{c.code}</span>
+                <span className="badge">{cnt}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="cv-controls">
+        <div className="search-wrap">
+          <SearchIco/>
+          <input className="search-input" placeholder="Search name, index, topic…" value={search} onChange={e=>setSearch(e.target.value)}/>
+          {search&&<button className="x-small" onClick={()=>setSearch("")}>✕</button>}
+        </div>
+        <select className="sel" value={grpFilter} onChange={e=>setGrpFilter(e.target.value)}>
+          {groups.map(g=><option key={g} value={g}>{g==="all"?"All Groups":`Group ${g}`}</option>)}
+        </select>
+        <button className="btn-print" onClick={doPrint}><PrintIco/> Print / PDF</button>
+        <button className="btn-excel" onClick={()=>exportCourseXLSX(students,active,grpFilter)}><ExcelIco/> Export Excel</button>
+      </div>
+      <div style={{marginBottom:16}}>
+        <h2 style={{fontSize:22,color:"var(--navy)",fontWeight:700,margin:0}}>{course.label} <span style={{fontSize:16,color:"var(--sub)",fontWeight:400}}>({course.code})</span></h2>
+        <p className="lead" style={{marginTop:4}}>{grpFilter==="all"?"All Groups":`Group ${grpFilter}`} &nbsp;·&nbsp; {visible.length} student{visible.length!==1?"s":""}</p>
+      </div>
+      {visible.length===0
+        ?<div className="empty">No students assigned to this course{grpFilter!=="all"?` in Group ${grpFilter}`:""} yet.</div>
+        :(
+          <div className="tbl-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Full Name</th><th>Index No.</th><th>Programme</th><th>Group</th><th>Research Topic / Assignment</th></tr></thead>
+              <tbody>
+                {Object.entries(byGrp).map(([g,list])=>[
+                  grpFilter==="all"&&<tr key={"h"+g} className="grp-hdr"><td colSpan={6} style={{padding:"8px 14px",fontSize:12,letterSpacing:.5,fontFamily:"Arial,sans-serif"}}>Group {g}</td></tr>,
+                  ...list.map((s,i)=>(
+                    <tr key={s.id} className={i%2===0?"even":""}>
+                      <td>{i+1}</td><td style={{fontWeight:600}}>{s.name}</td>
+                      <td>{s.indexNumber||<span className="dash">—</span>}</td>
+                      <td>{s.program||<span className="dash">—</span>}</td>
+                      <td><span className="grp-badge">Group {s.courses[active]?.group}</span></td>
+                      <td>{s.courses[active]?.topic||<span className="dash">Not assigned</span>}</td>
+                    </tr>
+                  ))
+                ])}
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADMIN PANEL
+// ─────────────────────────────────────────────────────────────────────────────
+function AdminPanel({students,onAdd,onEdit,onDelete,onImport}){
+  const [search,setSearch]=useState("");
+  const [sortBy,setSortBy]=useState("name");
+  const [delConfirm,setDelConfirm]=useState(null);
+  const fileRef=useRef();
+  const filtered=useMemo(()=>{
+    let l=[...students];
+    if(search){const q=search.toLowerCase();l=l.filter(s=>s.name.toLowerCase().includes(q)||(s.indexNumber||"").toLowerCase().includes(q)||(s.program||"").toLowerCase().includes(q));}
+    l.sort((a,b)=>a[sortBy==="name"?"name":"program"].localeCompare(b[sortBy==="name"?"name":"program"]));
+    return l;
+  },[students,search,sortBy]);
+  const handleFile=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const wb=XLSX.read(ev.target.result,{type:"binary"});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws);
+      const list=rows.map(r=>{
+        const s=emptyStudent();
+        s.name=r["Full Name"]||r["Name"]||r["name"]||"";
+        s.indexNumber=r["Index Number"]||r["Index"]||"";
+        s.program=r["Programme"]||r["Program"]||"";
+        COURSES.forEach(c=>{s.courses[c.key].group=r[`${c.code} Group`]||r[`${c.label} Group`]||"";s.courses[c.key].topic=r[`${c.code} Topic`]||r[`${c.label} Topic`]||"";});
+        return s;
+      }).filter(s=>s.name.trim());
+      onImport(list);fileRef.current.value="";
+    };
+    reader.readAsBinaryString(file);
+  };
+  return (
+    <div>
+      <div className="admin-top">
+        <div><h1>Admin Dashboard</h1><p className="lead">{students.length} students in database</p></div>
+        <div className="admin-btns">
+          <button className="btn-import" onClick={()=>fileRef.current.click()}><ImportIco/> Import Excel</button>
+          <input ref={fileRef} type="file" accept=".xlsx,.xls" style={{display:"none"}} onChange={handleFile}/>
+          <button className="btn-excel" onClick={()=>exportAllXLSX(students)}><ExcelIco/> Export All</button>
+          <button className="btn-add" onClick={onAdd}><PlusIco/> Add Student</button>
+        </div>
+      </div>
+      <div className="filter-bar">
+        <div className="search-wrap">
+          <SearchIco/>
+          <input className="search-input" placeholder="Search students…" value={search} onChange={e=>setSearch(e.target.value)}/>
+          {search&&<button className="x-small" onClick={()=>setSearch("")}>✕</button>}
+        </div>
+        <select className="sel" value={sortBy} onChange={e=>setSortBy(e.target.value)}>
+          <option value="name">Sort: Name A–Z</option>
+          <option value="program">Sort: Programme</option>
+        </select>
+      </div>
+      <div className="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Full Name</th><th>Index No.</th><th>Programme</th>
+            {COURSES.map(c=><th key={c.key} style={{fontSize:10}}>{c.code}</th>)}
+            <th>Actions</th>
+          </tr></thead>
+          <tbody>
+            {filtered.map((s,i)=>(
+              <tr key={s.id} className={i%2===0?"even":""}>
+                <td>{i+1}</td><td style={{fontWeight:600}}>{s.name}</td>
+                <td>{s.indexNumber||<span className="dash">—</span>}</td>
+                <td>{s.program||<span className="dash">—</span>}</td>
+                {COURSES.map(c=>(
+                  <td key={c.key}>{s.courses?.[c.key]?.group?<span className="grp-badge">Grp {s.courses[c.key].group}</span>:<span className="dash">—</span>}</td>
+                ))}
+                <td>
+                  <div style={{display:"flex",gap:5}}>
+                    <button className="btn-edit" onClick={()=>onEdit(s)} title="Edit"><EditIco/></button>
+                    <button className="btn-del" onClick={()=>setDelConfirm(s.id)} title="Delete"><DelIco/></button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {filtered.length===0&&<div className="empty">No students found.</div>}
+      </div>
+      {delConfirm&&(
+        <div className="overlay" onClick={e=>e.target===e.currentTarget&&setDelConfirm(null)}>
+          <div className="modal" style={{maxWidth:380,padding:32,display:"flex",flexDirection:"column",gap:16}}>
+            <h3 style={{color:"var(--navy)",margin:0}}>Delete Student?</h3>
+            <p style={{color:"#555",margin:0,fontSize:14}}>Permanently remove <b>{students.find(s=>s.id===delConfirm)?.name}</b>? This cannot be undone.</p>
+            <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+              <button className="btn-cancel" onClick={()=>setDelConfirm(null)}>Cancel</button>
+              <button className="btn-save" style={{background:"var(--red)",width:"auto"}} onClick={()=>{onDelete(delConfirm);setDelConfirm(null);}}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ROOT APP
+// ─────────────────────────────────────────────────────────────────────────────
+function App(){
+  const {students,loading,saving,dbMode,saveStudent,deleteStudent,importStudents} = useStudents();
+  const [view,setView]=useState("portal");
+  const [authed,setAuthed]=useState(false);
+  const [pw,setPw]=useState("");
+  const [pwErr,setPwErr]=useState("");
+  const [modal,setModal]=useState(null);
+  const [search,setSearch]=useState("");
+  const [progFilter,setProgFilter]=useState("all");
+
+  const handleSave=useCallback(async s=>{await saveStudent(s);setModal(null);},[saveStudent]);
+  const handleLogin=()=>{ if(pw===ADMIN_PASSWORD){setAuthed(true);setPwErr("");setView("admin");setPw("");}else setPwErr("Incorrect password."); };
+
+  const portalList=useMemo(()=>{
+    let l=[...students];
+    if(search){const q=search.toLowerCase();l=l.filter(s=>s.name.toLowerCase().includes(q)||(s.indexNumber||"").toLowerCase().includes(q)||Object.values(s.courses||{}).some(c=>(c.group||"").toLowerCase().includes(q)||(c.topic||"").toLowerCase().includes(q)));}
+    if(progFilter!=="all")l=l.filter(s=>s.program===progFilter);
+    return l.sort((a,b)=>a.name.localeCompare(b.name));
+  },[students,search,progFilter]);
+
+  if(loading) return (
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"100vh",background:"#0d1b2a",gap:16}}>
+      <div style={{color:"#f0a500",fontSize:24,fontFamily:"Georgia,serif",fontWeight:700}}>UCC CoDE</div>
+      <div style={{color:"#8899bb",fontSize:14,fontFamily:"Arial,sans-serif"}}>Loading Student Database…</div>
+      <div style={{width:40,height:40,border:"3px solid #ffffff22",borderTopColor:"#1b6ca8",borderRadius:"50%",animation:"spin .6s linear infinite"}}></div>
+    </div>
+  );
+
+  return (
+    <React.Fragment>
+      <header className="hdr">
+        <div className="hdr-inner">
+          <div className="logo">
+            <div className="logo-mk">UCC</div>
+            <div>
+              <div className="logo-title">CoDE Student Database</div>
+              <div className="logo-sub">BSc IT &amp; BEd IT · Group &amp; Assignment Tracker</div>
+            </div>
+          </div>
+          <nav>
+            {[["portal","🎓 Student Portal"],["courses","📚 Course Views"],[authed?"admin":"login",authed?"🔓 Admin":"🔒 Admin"]].map(([v,l])=>(
+              <button key={v} className={"nav-btn"+(view===v?" on":"")} onClick={()=>{if(v==="admin"&&!authed)setView("login");else setView(v);}}>{l}</button>
+            ))}
+            {authed&&<button className="logout-btn" onClick={()=>{setAuthed(false);setView("portal");}}>Sign Out</button>}
+          </nav>
+        </div>
+        <div className="stripe"/>
+      </header>
+
+      <main>
+        {/* CONFIG NOTICE when Firebase not set up */}
+        {!window.firebaseReady && (
+          <div className="config-notice">
+            <h3>⚠️ Firebase Not Configured — Running in Local Mode</h3>
+            <p>Data is currently saving to this browser only. To enable the cloud database (so all classmates can see updates), open <code>index.html</code> in a text editor, find the <code>firebaseConfig</code> section, and replace the placeholder values with your Firebase project credentials.</p>
+            <p style={{marginTop:8}}>See setup instructions at the top of the HTML file, or ask your IT admin (JB IT Solutions) to configure it.</p>
+          </div>
+        )}
+
+        {view==="portal" && (
+          <div>
+            <div style={{marginBottom:24}}><h1>Student Groups &amp; Assignments</h1><p className="lead">Find your name, group number, and research topic for each course. Click a card to expand.</p></div>
+            <div className="filter-bar">
+              <div className="search-wrap">
+                <SearchIco/>
+                <input className="search-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by name, group, topic…"/>
+                {search&&<button className="x-small" onClick={()=>setSearch("")}>✕</button>}
+              </div>
+              <select className="sel" value={progFilter} onChange={e=>setProgFilter(e.target.value)}>
+                <option value="all">All Programmes</option>
+                {PROGRAMS.map(p=><option key={p}>{p}</option>)}
+              </select>
+            </div>
+            <p className="stat"><b>{portalList.length}</b> of <b>{students.length}</b> students shown</p>
+            {portalList.length===0?<div className="empty">No students match your search.</div>:<div className="card-grid">{portalList.map(s=><StudentCard key={s.id} student={s}/>)}</div>}
+          </div>
+        )}
+
+        {view==="courses" && <CourseView students={students}/>}
+
+        {view==="login" && (
+          <div className="login-wrap">
+            <div className="login-card">
+              <div style={{textAlign:"center",color:"var(--teal)",marginBottom:4}}><LockIco s={22}/></div>
+              <h2 style={{margin:0,textAlign:"center",color:"var(--navy)",fontSize:20}}>Admin Access</h2>
+              <p className="lead" style={{textAlign:"center"}}>Enter the administrator password.</p>
+              <input type="password" className="inp" placeholder="Password" value={pw} onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()}/>
+              {pwErr&&<p className="err">{pwErr}</p>}
+              <button className="btn-save" style={{width:"100%"}} onClick={handleLogin}>Unlock Admin Panel →</button>
+            </div>
+          </div>
+        )}
+
+        {view==="admin" && authed && (
+          <AdminPanel
+            students={students}
+            onAdd={()=>setModal(emptyStudent())}
+            onEdit={s=>setModal(JSON.parse(JSON.stringify(s)))}
+            onDelete={deleteStudent}
+            onImport={importStudents}
+          />
+        )}
+      </main>
+
+      {modal && <StudentModal student={modal} onSave={handleSave} onClose={()=>setModal(null)}/>}
+
+      {saving && (
+        <div className="saving-toast">
+          <span className="spinner"/>
+          Saving to {window.firebaseReady?"Firebase cloud":"local storage"}…
+        </div>
+      )}
+
+      <footer>
+        UCC CoDE Student Group Database &nbsp;·&nbsp; BSc IT &amp; BEd IT &nbsp;·&nbsp; JB IT Solutions &nbsp;·&nbsp; {new Date().getFullYear()}
+        &nbsp;·&nbsp; <span style={{color:window.firebaseReady?"var(--green)":"#f0a500"}}>{window.firebaseReady?"● Firebase Cloud Active":"● Local Mode (Firebase not configured)"}</span>
+      </footer>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
