@@ -558,6 +558,33 @@ const ImportIco=()=><Ico d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5
 const DBIco    =()=><Ico d="M12 2a9 3 0 0 1 9 3c0 1.657-4.03 3-9 3S3 6.657 3 5a9 3 0 0 1 9-3zM3 5v4c0 1.657 4.03 3 9 3s9-1.343 9-3V5M3 9v4c0 1.657 4.03 3 9 3s9-1.343 9-3V9M3 13v4c0 1.657 4.03 3 9 3s9-1.343 9-3v-4"/>;
 
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// APP CONFIG HOOK — editable courses, programs, WhatsApp links
+// ─────────────────────────────────────────────────────────────────────────────
+function useAppConfig() {
+  const DEFAULTS = {
+    courses: COURSES.map(c=>({...c})),
+    programs: [...PROGRAMS],
+    whatsapp: {groups:{}, programs:{}, centers:{}}
+  };
+  const [cfg, setCfg] = useState(()=>{
+    try { const s=localStorage.getItem("app_cfg"); return s?{...DEFAULTS,...JSON.parse(s)}:DEFAULTS; }
+    catch { return DEFAULTS; }
+  });
+  useEffect(()=>{
+    if(window.db) window.db.collection("_config").doc("app").get()
+      .then(doc=>{ if(doc.exists) setCfg(prev=>({...DEFAULTS,...doc.data()})); }).catch(()=>{});
+  },[]);
+  const saveCfg = (updates) => {
+    const merged = {...cfg, ...updates};
+    setCfg(merged);
+    localStorage.setItem("app_cfg", JSON.stringify(merged));
+    if(window.db) window.db.collection("_config").doc("app").set(merged).catch(()=>{});
+  };
+  return {cfg, saveCfg};
+}
+
 // FIREBASE DATABASE LAYER
 // ─────────────────────────────────────────────────────────────────────────────
 function useStudents() {
