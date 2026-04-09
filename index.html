@@ -1445,31 +1445,58 @@ function WizardPanel({students, onSaveGroupTopic, onSaveStudent}) {
 // SETTINGS PANEL
 // ─────────────────────────────────────────────────────────────────────────────
 function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChange, students, onDeleteAll, cfg, onSaveCfg}) {
-  const [form, setForm]   = useState({...settings});
-  const [pwd, setPwd]     = useState({cur:"", nw:"", cf:""});
-  const [pwdMsg, setPwdMsg]   = useState("");
+
+  /* ── Appearance ── */
+  const [form,    setForm]    = useState({...settings});
   const [saveMsg, setSaveMsg] = useState("");
   const upd = (k,v) => setForm(p=>({...p,[k]:v}));
-  const activeCourses  = cfg?.courses  || COURSES;
-  const activePrograms = cfg?.programs || PROGRAMS;
-  const waGroups       = cfg?.whatsapp?.groups   || {};
-  const waPrograms     = cfg?.whatsapp?.programs || {};
-  const waCentres      = cfg?.whatsapp?.centers  || {};
-  const centres        = [...new Set(students.map(s=>s.center).filter(Boolean))].sort();
-
   const handleSaveAppearance = () => {
     onSaveSettings(form);
-    setSaveMsg("✅ Appearance saved!"); setTimeout(()=>setSaveMsg(""),3000);
+    setSaveMsg("✅ Saved!"); setTimeout(()=>setSaveMsg(""),3000);
   };
+
+  /* ── Password ── */
+  const [pwd,    setPwd]    = useState({cur:"",nw:"",cf:""});
+  const [pwdMsg, setPwdMsg] = useState("");
   const handlePwd = () => {
-    if (pwd.cur !== adminPassword) { setPwdMsg("Current password is incorrect."); return; }
-    if (pwd.nw.length < 4)         { setPwdMsg("New password must be at least 4 characters."); return; }
-    if (pwd.nw !== pwd.cf)         { setPwdMsg("New passwords do not match."); return; }
+    if (pwd.cur !== adminPassword) { setPwdMsg("Current password incorrect."); return; }
+    if (pwd.nw.length < 4)         { setPwdMsg("Min 4 characters."); return; }
+    if (pwd.nw !== pwd.cf)         { setPwdMsg("Passwords do not match."); return; }
     onPasswordChange(pwd.nw);
     setPwd({cur:"",nw:"",cf:""});
     setPwdMsg("✅ Password changed!"); setTimeout(()=>setPwdMsg(""),4000);
   };
-  const setWa = (type, key, val) => onSaveCfg({whatsapp:{...cfg?.whatsapp, [type]:{...(cfg?.whatsapp?.[type]||{}),[key]:val}}});
+
+  /* ── Courses — LOCAL editable copy ── */
+  const [localCourses, setLocalCourses] = useState(()=>(cfg?.courses||COURSES).map(c=>({...c})));
+  const [courseMsg,    setCourseMsg]    = useState("");
+  // Sync when cfg prop changes externally
+  React.useEffect(()=>{ setLocalCourses((cfg?.courses||COURSES).map(c=>({...c}))); },[cfg?.courses]);
+  const saveCourses = () => {
+    onSaveCfg({courses:localCourses});
+    setCourseMsg("✅ Courses saved!"); setTimeout(()=>setCourseMsg(""),3000);
+  };
+
+  /* ── Programs — LOCAL editable copy ── */
+  const [localProgs, setLocalProgs] = useState(()=>[...(cfg?.programs||PROGRAMS)]);
+  const [progMsg,    setProgMsg]    = useState("");
+  React.useEffect(()=>{ setLocalProgs([...(cfg?.programs||PROGRAMS)]); },[cfg?.programs]);
+  const saveProgs = () => {
+    onSaveCfg({programs:localProgs});
+    setProgMsg("✅ Programmes saved!"); setTimeout(()=>setProgMsg(""),3000);
+  };
+
+  /* ── WhatsApp — LOCAL editable copy ── */
+  const [localWa,  setLocalWa]  = useState(()=>JSON.parse(JSON.stringify(cfg?.whatsapp||{groups:{},programs:{},centers:{}})));
+  const [waMsg,    setWaMsg]    = useState("");
+  React.useEffect(()=>{ setLocalWa(JSON.parse(JSON.stringify(cfg?.whatsapp||{groups:{},programs:{},centers:{}}))); },[cfg?.whatsapp]);
+  const setWaField = (type, key, val) => setLocalWa(prev=>({...prev,[type]:{...prev[type],[key]:val}}));
+  const saveWa = () => {
+    onSaveCfg({whatsapp:localWa});
+    setWaMsg("✅ WhatsApp links saved!"); setTimeout(()=>setWaMsg(""),3000);
+  };
+
+  const centres = [...new Set(students.map(s=>s.center).filter(Boolean))].sort();
 
   return (
     <div className="settings-page">
@@ -1522,45 +1549,49 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
       {/* ── COURSES ── */}
       <div className="set-sec">
         <h3>📚 Course Management</h3>
-        <p className="s-desc">Edit course display names and codes. Changes apply immediately across the entire app.</p>
+        <p className="s-desc">Edit course display names and codes, then click Save. Changes apply app-wide.</p>
         <table className="edit-table">
           <thead><tr><th>Course Name</th><th style={{width:110}}>Code</th></tr></thead>
           <tbody>
-            {activeCourses.map((c,i)=>(
+            {localCourses.map((c,i)=>(
               <tr key={c.key}>
-                <td><input className="et-inp" value={c.label} onChange={e=>onSaveCfg({courses:activeCourses.map((x,xi)=>xi===i?{...x,label:e.target.value}:x)})}/></td>
-                <td><input className="et-inp" value={c.code}  onChange={e=>onSaveCfg({courses:activeCourses.map((x,xi)=>xi===i?{...x,code:e.target.value}:x)})}/></td>
+                <td><input className="et-inp" value={c.label} onChange={e=>{const n=[...localCourses];n[i]={...n[i],label:e.target.value};setLocalCourses(n);}}/></td>
+                <td><input className="et-inp" value={c.code}  onChange={e=>{const n=[...localCourses];n[i]={...n[i],code:e.target.value};setLocalCourses(n);}}/></td>
               </tr>
             ))}
           </tbody>
         </table>
+        {courseMsg&&<p className="msg-ok" style={{marginTop:8}}>{courseMsg}</p>}
+        <div className="set-save-row"><button className="btn-save" onClick={saveCourses}>Save Courses</button></div>
       </div>
 
       {/* ── PROGRAMMES ── */}
       <div className="set-sec">
         <h3>🎓 Programme Management</h3>
-        <p className="s-desc">Edit, add, or remove programme names used throughout the app.</p>
+        <p className="s-desc">Edit, add, or remove programme names, then click Save.</p>
         <table className="edit-table">
           <thead><tr><th>Programme Name</th><th style={{width:36}}></th></tr></thead>
           <tbody>
-            {activePrograms.map((p,i)=>(
+            {localProgs.map((p,i)=>(
               <tr key={i}>
-                <td><input className="et-inp" value={p} onChange={e=>onSaveCfg({programs:activePrograms.map((x,xi)=>xi===i?e.target.value:x)})}/></td>
-                <td><button className="et-btn-del" title="Remove" onClick={()=>onSaveCfg({programs:activePrograms.filter((_,xi)=>xi!==i)})}>🗑️</button></td>
+                <td><input className="et-inp" value={p} onChange={e=>{const n=[...localProgs];n[i]=e.target.value;setLocalProgs(n);}}/></td>
+                <td><button className="et-btn-del" title="Remove" onClick={()=>setLocalProgs(localProgs.filter((_,xi)=>xi!==i))}>🗑️</button></td>
               </tr>
             ))}
           </tbody>
         </table>
-        <button className="et-btn-add" onClick={()=>onSaveCfg({programs:[...activePrograms,"New Programme"]})}>+ Add Programme</button>
+        <button className="et-btn-add" onClick={()=>setLocalProgs([...localProgs,"New Programme"])}>+ Add Programme</button>
+        {progMsg&&<p className="msg-ok" style={{marginTop:8}}>{progMsg}</p>}
+        <div className="set-save-row"><button className="btn-save" onClick={saveProgs}>Save Programmes</button></div>
       </div>
 
       {/* ── WHATSAPP ── */}
       <div className="set-sec">
         <h3>💬 WhatsApp Group Links</h3>
-        <p className="s-desc">Paste invite links for course groups, programmes, and study centres. Links appear as buttons on student cards and rep cards throughout the portal.</p>
+        <p className="s-desc">Paste invite links for course groups, programmes, and study centres. Click Save when done. Links appear as buttons on student and rep cards throughout the portal.</p>
 
         <div className="wa-sec-hdr">Course Groups</div>
-        {activeCourses.map(c=>{
+        {localCourses.map(c=>{
           const grps=[...new Set(students.map(s=>s.courses[c.key]?.group).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
           if(!grps.length) return null;
           return (
@@ -1569,7 +1600,7 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
               {grps.map(g=>(
                 <div key={g} className="wa-inp-row">
                   <div className="wa-inp-label">Group {g}</div>
-                  <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={waGroups[c.key+"_"+g]||""} onChange={e=>setWa("groups",c.key+"_"+g,e.target.value)}/>
+                  <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={(localWa.groups||{})[c.key+"_"+g]||""} onChange={e=>setWaField("groups",c.key+"_"+g,e.target.value)}/>
                 </div>
               ))}
             </React.Fragment>
@@ -1577,10 +1608,10 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
         })}
 
         <div className="wa-sec-hdr" style={{marginTop:20}}>Programmes</div>
-        {activePrograms.map(p=>(
+        {localProgs.map(p=>(
           <div key={p} className="wa-inp-row">
             <div className="wa-inp-label">{p.replace("BSc ","").replace("Certificate in ","Cert. ").substring(0,22)}</div>
-            <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={waPrograms[p]||""} onChange={e=>setWa("programs",p,e.target.value)}/>
+            <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={(localWa.programs||{})[p]||""} onChange={e=>setWaField("programs",p,e.target.value)}/>
           </div>
         ))}
 
@@ -1590,10 +1621,12 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
           : centres.map(c=>(
               <div key={c} className="wa-inp-row">
                 <div className="wa-inp-label">{c.substring(0,22)}</div>
-                <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={waCentres[c]||""} onChange={e=>setWa("centers",c,e.target.value)}/>
+                <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={(localWa.centers||{})[c]||""} onChange={e=>setWaField("centers",c,e.target.value)}/>
               </div>
             ))
         }
+        {waMsg&&<p className="msg-ok" style={{marginTop:8}}>{waMsg}</p>}
+        <div className="set-save-row"><button className="btn-save" style={{background:"#25D366"}} onClick={saveWa}>💾 Save WhatsApp Links</button></div>
       </div>
 
       {/* ── SECURITY ── */}
@@ -1630,12 +1663,6 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// NOTICEBOARD — PORTAL VIEW
-// ─────────────────────────────────────────────────────────────────────────────
-const CAT_LABELS = {urgent:"🚨 Urgent",info:"ℹ️ Info",general:"📌 General",reminder:"🔔 Reminder",event:"📅 Event"};
-
 function NoticeCard({notice}) {
   const [expanded, setExpanded] = useState(false);
   const PREVIEW = 220;
