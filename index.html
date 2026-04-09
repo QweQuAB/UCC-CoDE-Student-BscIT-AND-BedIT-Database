@@ -868,40 +868,72 @@ function RepBoard({students, courses, whatsapp, onNavCourse, onNavProg}) {
 function StudentCard({student, whatsapp}){
   const [open,setOpen]=useState(false);
   const assigned=COURSES.filter(c=>student.courses?.[c.key]?.group);
+  const repRoles = student.repRoles||[];
+  const initials = student.name.split(" ").map(w=>w[0]||"").slice(0,2).join("").toUpperCase();
   return (
     <div className="card">
       <div className="card-hdr" onClick={()=>setOpen(o=>!o)}>
-        <div className="avatar">{student.name[0].toUpperCase()}</div>
+        <div className="avatar">{initials||student.name[0]?.toUpperCase()||"?"}</div>
         <div style={{flex:1}}>
-          <div className="card-name">{student.name}</div>
+          <div className="card-name">
+            {student.name}
+            {repRoles.length>0&&<span style={{marginLeft:8,background:"var(--gold)",color:"var(--navy)",fontSize:9,fontWeight:700,padding:"2px 6px",borderRadius:3,fontFamily:"Arial,sans-serif",verticalAlign:"middle"}}>REP</span>}
+          </div>
           <div className="card-sub">{student.program||"Programme unknown"}{student.indexNumber?` · ${student.indexNumber}`:""}</div>
-          <div className="card-sub" style={{color:"var(--teal)"}}>{assigned.length} course{assigned.length!==1?"s":""} assigned</div>
+          <div className="card-sub" style={{color:"var(--teal)"}}>{assigned.length} course{assigned.length!==1?"s":""} assigned{student.center?` · ${student.center}`:""}</div>
         </div>
         <div style={{color:"var(--sub)",transition:"transform .2s",transform:open?"rotate(180deg)":"rotate(0)"}}><ChevIco/></div>
       </div>
       {open && (
-        {(student.phone||student.email)&&(
-      <div className="card-contacts">
-        {student.phone&&<a href={"tel:"+student.phone} className="cc-link" onClick={e=>e.stopPropagation()}>📞 {student.phone}</a>}
-        {student.email&&<a href={"mailto:"+student.email} className="cc-link" onClick={e=>e.stopPropagation()}>✉️ {student.email}</a>}
-      </div>
-    )}
-    <div className="card-body">
-          {assigned.length===0 && <p className="lead" style={{paddingTop:10}}>No groups assigned yet.</p>}
-          {assigned.map(c=>{
-            const d=student.courses[c.key];
-            return (
-              <div key={c.key} className="chip">
-                <div className="chip-top">
-                  <span className="chip-course">{c.label}</span>
-                  <span className="chip-code">{c.code}</span>
-                  <span className="chip-grp">Group {d.group}</span>
+        <React.Fragment>
+          {(student.phone||student.email)&&(
+            <div className="card-contacts">
+              {student.phone&&<a href={"tel:"+student.phone} className="cc-link" onClick={e=>e.stopPropagation()}>📞 {student.phone}</a>}
+              {student.email&&<a href={"mailto:"+student.email} className="cc-link" onClick={e=>e.stopPropagation()}>✉️ {student.email}</a>}
+              {student.center&&<span style={{fontSize:11,color:"var(--sub)",fontFamily:"Arial,sans-serif"}}>📍 {student.center}</span>}
+            </div>
+          )}
+          {repRoles.length>0&&(
+            <div style={{padding:"6px 17px 0",display:"flex",gap:6,flexWrap:"wrap"}}>
+              {repRoles.map((r,i)=>{
+                const c=COURSES.find(x=>x.key===r.courseKey);
+                const roleLabel=r.label||(r.type==="courseRep"?`${c?.code||""}  Course Rep`:r.type==="centerRep"?"Centre Rep":r.type==="programRep"?"Programme Rep":"Group Rep");
+                return <span key={i} style={{background:"var(--navy)",color:"var(--gold)",fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:4,fontFamily:"Arial,sans-serif"}}>🎖️ {roleLabel}</span>;
+              })}
+            </div>
+          )}
+          <div className="card-body">
+            {assigned.length===0 && <p className="lead" style={{paddingTop:10}}>No groups assigned yet.</p>}
+            {assigned.map(c=>{
+              const d=student.courses[c.key];
+              const waLink=whatsapp?.groups?.[c.key+"_"+d.group];
+              const waProg=whatsapp?.programs?.[student.program||""];
+              return (
+                <div key={c.key} className="chip">
+                  <div className="chip-top">
+                    <span className="chip-course">{c.label}</span>
+                    <span className="chip-code">{c.code}</span>
+                    <span className="chip-grp">Group {d.group}</span>
+                    {waLink&&<a href={waLink} target="_blank" rel="noopener noreferrer" className="wa-btn" style={{marginLeft:4,padding:"1px 7px",fontSize:10}} onClick={e=>e.stopPropagation()}>💬 Chat</a>}
+                  </div>
+                  {d.topic&&<div className="chip-topic">{d.topic}</div>}
                 </div>
-                {d.topic&&<div className="chip-topic">{d.topic}</div>}
+              );
+            })}
+            {whatsapp?.programs?.[student.program||""]&&(
+              <div style={{marginTop:8,borderTop:"1px solid var(--border)",paddingTop:8,display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:11,color:"var(--sub)",fontFamily:"Arial,sans-serif"}}>Programme group:</span>
+                <a href={whatsapp.programs[student.program||""]} target="_blank" rel="noopener noreferrer" className="wa-btn" style={{padding:"2px 10px",fontSize:11}} onClick={e=>e.stopPropagation()}>💬 WhatsApp</a>
               </div>
-            );
-          })}
-        </div>
+            )}
+            {student.center&&whatsapp?.centers?.[student.center]&&(
+              <div style={{marginTop:6,display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:11,color:"var(--sub)",fontFamily:"Arial,sans-serif"}}>Centre group:</span>
+                <a href={whatsapp.centers[student.center]} target="_blank" rel="noopener noreferrer" className="wa-btn" style={{padding:"2px 10px",fontSize:11}} onClick={e=>e.stopPropagation()}>💬 WhatsApp</a>
+              </div>
+            )}
+          </div>
+        </React.Fragment>
       )}
     </div>
   );
@@ -910,13 +942,17 @@ function StudentCard({student, whatsapp}){
 // ─────────────────────────────────────────────────────────────────────────────
 // COURSE VIEW
 // ─────────────────────────────────────────────────────────────────────────────
-function CourseView({students, whatsapp, courses}){
-  const [active,setActive]=useState(initialCourseKey||COURSES[0].key);
-  const [grpFilter,setGrpFilter]=useState(initialGroup||"all");
+function CourseView({students, whatsapp, courses, initialCourse}){
+  const activeCourses = courses || COURSES;
+  const getCourseLabel = (key) => (activeCourses.find(c=>c.key===key)||COURSES.find(c=>c.key===key)||{label:key}).label;
+  const getCourseCode  = (key) => (activeCourses.find(c=>c.key===key)||COURSES.find(c=>c.key===key)||{code:key}).code;
+  const getWaLink = (type, key) => whatsapp?.[type]?.[key] || "";
+  const [active,setActive]=useState(initialCourse||activeCourses[0]?.key||COURSES[0].key);
+  const [grpFilter,setGrpFilter]=useState("all");
   const [search,setSearch]=useState("");
   useEffect(()=>{setGrpFilter("all");setSearch("");},[active]);
-  useEffect(()=>{if(initialCourseKey)setActive(initialCourseKey);},[initialCourseKey]);
-  const course=COURSES.find(c=>c.key===active);
+  useEffect(()=>{if(initialCourse)setActive(initialCourse);},[initialCourse]);
+  const course=activeCourses.find(c=>c.key===active);
   const groups=useMemo(()=>{
     const gs=new Set(); students.forEach(s=>{const g=s.courses?.[active]?.group;if(g)gs.add(g);}); return["all",...[...gs].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}))];
   },[students,active]);
@@ -934,7 +970,7 @@ function CourseView({students, whatsapp, courses}){
     <div>
       <div className="course-tabs-wrap">
         <div className="course-tabs">
-          {COURSES.map(c=>{
+          {activeCourses.map(c=>{
             const cnt=students.filter(s=>s.courses?.[c.key]?.group).length;
             return(
               <button key={c.key} className={"c-tab"+(active===c.key?" on":"")} onClick={()=>setActive(c.key)}>
@@ -970,7 +1006,7 @@ function CourseView({students, whatsapp, courses}){
               <thead><tr><th>#</th><th>Full Name</th><th>Index No.</th><th>Programme</th><th>Group</th><th>Research Topic / Assignment</th><th>Contact</th></tr></thead>
               <tbody>
                 {Object.entries(byGrp).map(([g,list])=>[
-                  grpFilter==="all"&&<tr key={"h"+g} className="grp-hdr"><td colSpan={6} style={{padding:"8px 14px"}}>
+                  grpFilter==="all"&&<tr key={"h"+g} className="grp-hdr"><td colSpan={7} style={{padding:"8px 14px"}}>
                     <div className="grp-hdr-row">
                       <span style={{fontSize:12,letterSpacing:.5,fontFamily:"Arial,sans-serif"}}>Group {g}</span>
                       {getWaLink("groups",active+"_"+g)&&<a className="wa-btn sm" href={getWaLink("groups",active+"_"+g)} target="_blank" rel="noopener">💬 WhatsApp</a>}
@@ -2016,6 +2052,7 @@ function App(){
   const [modal,setModal]=useState(null);
   const [search,setSearch]=useState("");
   const [progFilter,setProgFilter]=useState("all");
+  const [courseNav,setCourseNav]=useState(null);
 
   // Dynamic admin password (stored in localStorage)
   const [adminPassword,setAdminPassword] = useState(()=>localStorage.getItem("admin_pw")||"StAnne2025");
@@ -2123,7 +2160,7 @@ function App(){
               </div>
             )})()}
             <RepBoard students={students} courses={activeCourses} whatsapp={appCfg.cfg.whatsapp}
-              onNavCourse={ck=>{ setView("courses"); }}
+              onNavCourse={ck=>{ setCourseNav(ck); setView("courses"); }}
               onNavProg={pg=>{ setProgFilter(pg||"all"); }}
             />
             <div className="filter-bar">
@@ -2137,12 +2174,17 @@ function App(){
                 {activePrograms.map(p=><option key={p}>{p}</option>)}
               </select>
             </div>
-            <p className="stat"><b>{portalList.length}</b> of <b>{students.length}</b> students shown</p>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
+              <p className="stat" style={{margin:0}}><b>{portalList.length}</b> of <b>{students.length}</b> students shown</p>
+              {progFilter!=="all"&&appCfg.cfg.whatsapp?.programs?.[progFilter]&&(
+                <a href={appCfg.cfg.whatsapp.programs[progFilter]} target="_blank" rel="noopener noreferrer" className="wa-btn">💬 {progFilter.replace("BSc ","").replace("Certificate in ","Cert. ").replace("BEd ","")} WhatsApp</a>
+              )}
+            </div>
             {portalList.length===0?<div className="empty">No students match your search.</div>:<div className="card-grid">{portalList.map(s=><StudentCard key={s.id} student={s} whatsapp={appCfg.cfg.whatsapp}/>)}</div>}
           </div>
         )}
 
-        {view==="courses" && <CourseView students={students} whatsapp={appCfg.cfg.whatsapp} courses={activeCourses}/>}
+        {view==="courses" && <CourseView students={students} whatsapp={appCfg.cfg.whatsapp} courses={activeCourses} initialCourse={courseNav}/>}
 
         {view==="noticeboard" && <Noticeboard notices={notices} loading={noticesLoading}/>}
 
