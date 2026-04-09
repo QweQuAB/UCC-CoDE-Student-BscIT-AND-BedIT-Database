@@ -2108,7 +2108,7 @@ function App(){
             <div className="filter-bar">
               <div className="search-wrap">
                 <SearchIco/>
-                <input className="search-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by name, group, topic\u2026"/>
+                <input className="search-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by name, group, topic"/>
                 {search&&<button className="x-small" onClick={()=>setSearch("")}>\u2715</button>}
               </div>
               <select className="sel" value={progFilter} onChange={e=>setProgFilter(e.target.value)}>
