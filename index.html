@@ -614,15 +614,28 @@ function AdminPanel({students,onAdd,onEdit,onDelete,onImport}){
     reader.readAsBinaryString(file);
   };
   const handleSeed = async () => {
-    if (!window.confirm(`Load ${SEED_STUDENTS.length} students from the source PDFs?\nThis will ADD to any existing records (won't delete current data).`)) return;
-    let added = 0, skipped = 0;
-    for (const s of SEED_STUDENTS) {
-      const exists = students.some(ex => ex.indexNumber === s.indexNumber);
-      if (exists) { skipped++; continue; }
-      await onSave(s);
-      added++;
+    const newOnes = SEED_STUDENTS.filter(s => !students.some(ex => ex.indexNumber === s.indexNumber));
+    const skipped = SEED_STUDENTS.length - newOnes.length;
+    if (newOnes.length === 0) { alert(`All ${skipped} students are already in the database. Nothing to load.`); return; }
+    if (!window.confirm(`Load ${newOnes.length} students into Firebase?${skipped > 0 ? `\n(${skipped} already exist and will be skipped.)` : ""}`)) return;
+    try {
+      if (window.db) {
+        // Firestore allows max 500 ops per batch — split into chunks
+        const chunkSize = 400;
+        for (let i = 0; i < newOnes.length; i += chunkSize) {
+          const chunk = newOnes.slice(i, i + chunkSize);
+          const batch = window.db.batch();
+          chunk.forEach(s => { const ref = window.db.collection("students").doc(s.id); batch.set(ref, s); });
+          await batch.commit();
+        }
+        alert(`✅ Done! ${newOnes.length} students loaded into Firebase.`);
+      } else {
+        // localStorage fallback
+        onImport(newOnes);
+      }
+    } catch(err) {
+      alert("Error seeding: " + err.message);
     }
-    alert(`Done! Added ${added} students. Skipped ${skipped} duplicates.`);
   };
 
   return (
