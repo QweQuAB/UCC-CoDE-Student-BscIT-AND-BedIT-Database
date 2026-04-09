@@ -153,6 +153,115 @@
       .logo-title { font-size: 13px; }
       h1 { font-size: 20px; }
     }
+
+    /* ── ADMIN INNER TABS ── */
+    .admin-inner-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--border);flex-wrap:wrap;}
+    .ai-tab{background:none;border:none;padding:11px 20px;font-size:13px;color:var(--sub);font-family:Georgia,serif;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .15s;}
+    .ai-tab:hover{color:var(--teal);}
+    .ai-tab.on{color:var(--teal);border-bottom-color:var(--teal);font-weight:700;}
+    /* ── DASHBOARD ── */
+    .stat-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-bottom:28px;}
+    .stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:22px 20px;position:relative;overflow:hidden;}
+    .stat-card::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--teal);}
+    .stat-card.s-gold::before{background:var(--gold);}
+    .stat-card.s-green::before{background:var(--green);}
+    .stat-card.s-purple::before{background:#a78bfa;}
+    .stat-card.s-red::before{background:var(--red);}
+    .stat-num{font-size:38px;font-weight:900;color:var(--navy);line-height:1;margin-bottom:6px;font-family:Arial,sans-serif;}
+    .stat-label{font-size:11px;color:var(--sub);font-family:Arial,sans-serif;text-transform:uppercase;letter-spacing:.5px;}
+    .dash-section{margin-bottom:28px;}
+    .dash-section h3{font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-family:Arial,sans-serif;font-weight:700;border-bottom:1px solid var(--border);padding-bottom:8px;}
+    .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-family:Arial,sans-serif;font-size:12px;}
+    .bar-label{width:130px;flex-shrink:0;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .bar-track{flex:1;height:10px;background:var(--light);border-radius:5px;overflow:hidden;}
+    .bar-fill{height:100%;background:var(--teal);border-radius:5px;transition:width .4s;min-width:2px;}
+    .bar-fill.alt{background:var(--gold);}
+    .bar-val{width:55px;text-align:right;color:var(--sub);flex-shrink:0;}
+    .bar-extra{width:65px;color:var(--sub);opacity:.7;flex-shrink:0;font-size:11px;}
+    /* ── GROUPS MANAGER ── */
+    .groups-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+    .groups-meta{display:flex;gap:18px;margin-bottom:14px;font-family:Arial,sans-serif;font-size:12px;color:var(--sub);}
+    .meta-pill{padding:3px 10px;border-radius:12px;background:var(--light);font-weight:700;}
+    .meta-pill.warn{background:#fff3cd;color:#856404;}
+    .meta-pill.bad{background:#fdeaea;color:var(--red);}
+    .groups-list{display:flex;flex-direction:column;gap:8px;}
+    .group-row{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 18px;}
+    .group-row-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .group-num-badge{background:var(--navy);color:#fff;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;white-space:nowrap;font-family:Arial,sans-serif;min-width:70px;text-align:center;}
+    .group-topic-area{flex:1;min-width:180px;}
+    .topic-view-row{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 9px;border-radius:6px;border:1px solid transparent;transition:all .12s;}
+    .topic-view-row:hover{background:var(--light);border-color:var(--border);}
+    .g-topic{font-size:14px;color:var(--text);font-family:Georgia,serif;}
+    .no-topic{color:#bbb;font-size:13px;font-style:italic;}
+    .edit-hint{font-size:12px;opacity:.4;margin-left:auto;}
+    .topic-edit-row{display:flex;align-items:center;gap:8px;}
+    .btn-sm{padding:6px 14px;border-radius:6px;font-size:12px;font-family:Arial,sans-serif;border:none;cursor:pointer;font-weight:600;}
+    .btn-sm.s{background:var(--teal);color:#fff;}
+    .btn-sm.c{background:var(--light);border:1px solid var(--border);color:var(--text);}
+    .group-cnt{color:var(--sub);font-size:12px;font-family:Arial,sans-serif;white-space:nowrap;margin-left:auto;}
+    .toggle-members{background:none;border:1px solid var(--border);color:var(--sub);font-size:11px;padding:3px 9px;border-radius:5px;font-family:Arial,sans-serif;margin-top:10px;}
+    .member-list{list-style:none;padding:10px 0 0;display:flex;flex-direction:column;gap:4px;}
+    .member-list li{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-family:Arial,sans-serif;padding:4px 8px;background:var(--light);border-radius:5px;}
+    .m-idx{color:var(--sub);font-size:11px;}
+    /* ── WIZARD ── */
+    .wizard-tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:18px;}
+    .wizard-tool{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px 20px;cursor:pointer;transition:all .15s;text-align:center;}
+    .wizard-tool:hover{border-color:var(--teal);box-shadow:0 4px 16px #1b6ca822;transform:translateY(-2px);}
+    .tool-icon{font-size:32px;margin-bottom:10px;}
+    .tool-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+    .tool-desc{font-size:12px;color:var(--sub);font-family:Arial,sans-serif;line-height:1.5;}
+    .wiz-shell{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .wiz-hdr{background:var(--navy);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;}
+    .wiz-title{color:#fff;font-size:15px;font-weight:700;}
+    .wiz-back{background:transparent;border:1px solid #ffffff44;color:#ccd;padding:6px 13px;border-radius:6px;font-size:12px;font-family:Arial,sans-serif;}
+    .wiz-body{padding:24px;}
+    .step-bar{display:flex;gap:6px;margin-bottom:22px;align-items:center;}
+    .s-dot{width:26px;height:26px;border-radius:50%;background:var(--light);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--sub);font-family:Arial,sans-serif;flex-shrink:0;}
+    .s-dot.done{background:var(--green);border-color:var(--green);color:#fff;}
+    .s-dot.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+    .s-line{flex:1;height:2px;background:var(--border);}
+    .s-line.done{background:var(--green);}
+    .pick-list{display:flex;flex-direction:column;gap:5px;max-height:280px;overflow-y:auto;margin-top:10px;padding-right:4px;}
+    .pick-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-family:Arial,sans-serif;transition:background .1s;background:var(--white);}
+    .pick-item:hover{background:var(--light);}
+    .pick-item.sel{background:#e8f4fd;border-color:var(--teal);}
+    .pick-name{font-weight:600;flex:1;}
+    .pick-idx{color:var(--sub);font-size:11px;}
+    .wiz-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+    .btn-next{background:var(--teal);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;font-family:Georgia,serif;}
+    .btn-next:disabled{opacity:.4;cursor:not-allowed;}
+    .success-box{text-align:center;padding:40px 20px;}
+    .s-icon{font-size:56px;margin-bottom:14px;}
+    .s-msg{font-size:18px;font-weight:700;color:var(--green);margin-bottom:8px;}
+    .s-sub{color:var(--sub);font-size:13px;font-family:Arial,sans-serif;}
+    .bulk-topic-grid{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;margin-top:12px;}
+    .bt-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--white);border:1px solid var(--border);border-radius:8px;}
+    .bt-grp{background:var(--navy);color:#fff;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;min-width:65px;text-align:center;font-family:Arial,sans-serif;}
+    .bt-inp{flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:Georgia,serif;outline:none;}
+    .bt-inp:focus{border-color:var(--teal);}
+    .bt-cnt{color:var(--sub);font-size:11px;font-family:Arial,sans-serif;white-space:nowrap;}
+    /* ── SETTINGS ── */
+    .settings-page{max-width:700px;}
+    .set-sec{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:16px;}
+    .set-sec h3{font-size:15px;color:var(--navy);font-weight:700;margin-bottom:4px;}
+    .set-sec .s-desc{font-size:12px;color:var(--sub);font-family:Arial,sans-serif;margin-bottom:18px;}
+    .set-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);gap:14px;flex-wrap:wrap;}
+    .set-row:last-child{border-bottom:none;padding-bottom:0;}
+    .set-lbl{font-size:13px;font-weight:600;color:var(--text);font-family:Arial,sans-serif;}
+    .set-sub{font-size:11px;color:var(--sub);margin-top:2px;}
+    .color-preview{width:34px;height:34px;border-radius:8px;border:2px solid var(--border);}
+    .color-row{display:flex;align-items:center;gap:10px;}
+    .set-danger{background:#fff5f5;border-color:#fca5a5;}
+    .set-danger h3{color:var(--red);}
+    .btn-danger{background:var(--red);color:#fff;border:none;padding:9px 18px;border-radius:7px;font-size:13px;font-family:Arial,sans-serif;font-weight:600;}
+    .pwd-fields{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+    .set-save-row{display:flex;justify-content:flex-end;padding-top:14px;border-top:1px solid var(--border);margin-top:16px;}
+    .msg-ok{color:var(--green);font-size:12px;font-family:Arial,sans-serif;margin-top:6px;}
+    .msg-err{color:var(--red);font-size:12px;font-family:Arial,sans-serif;margin-top:6px;}
+    .preview-hdr{background:var(--navy);padding:10px 16px;border-radius:8px;display:flex;align-items:center;gap:10px;margin-top:14px;}
+    .preview-mk{padding:4px 7px;border-radius:4px;font-size:11px;font-weight:900;font-family:Arial,sans-serif;}
+    .preview-title{color:#fff;font-size:13px;font-weight:700;}
+    .preview-sub{color:#8899bb;font-size:11px;font-family:Arial,sans-serif;}
   </style>
 </head>
 <body>
@@ -398,7 +507,26 @@ function useStudents() {
     } finally { setSaving(false); }
   }, [dbMode]);
 
-  return { students, loading, saving, dbMode, saveStudent, deleteStudent, importStudents };
+
+  const saveGroupTopic = useCallback(async (courseKey, groupNum, newTopic) => {
+    const affected = students.filter(s => String(s.courses[courseKey]?.group) === String(groupNum));
+    if (!affected.length) return;
+    setSaving(true);
+    try {
+      const updater = s => ({...s, courses:{...s.courses,[courseKey]:{...s.courses[courseKey],topic:newTopic}}});
+      if (dbMode==="firebase" && window.db) {
+        for (let i=0;i<affected.length;i+=400) {
+          const batch=window.db.batch();
+          affected.slice(i,i+400).forEach(s=>batch.set(window.db.collection("students").doc(s.id),updater(s)));
+          await batch.commit();
+        }
+      } else {
+        setStudents(prev=>{ const next=prev.map(s=>String(s.courses[courseKey]?.group)===String(groupNum)?updater(s):s); lsSet(next); return next; });
+      }
+    } finally { setSaving(false); }
+  }, [students, dbMode]);
+
+  return { students, loading, saving, dbMode, saveStudent, deleteStudent, importStudents, saveGroupTopic };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -580,10 +708,499 @@ function CourseView({students}){
   );
 }
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADMIN DASHBOARD
+// ─────────────────────────────────────────────────────────────────────────────
+function AdminDashboard({students}) {
+  const total = students.length;
+  const byCourse = COURSES.map(c=>{
+    const asgn = students.filter(s=>s.courses[c.key]?.group);
+    const grps = new Set(asgn.map(s=>s.courses[c.key].group));
+    return {...c, assigned:asgn.length, groups:grps.size};
+  });
+  const fully = students.filter(s=>COURSES.every(c=>s.courses[c.key]?.group)).length;
+  const progs = {};
+  students.forEach(s=>{const p=s.program||"Unknown";progs[p]=(progs[p]||0)+1;});
+  const progList = Object.entries(progs).sort((a,b)=>b[1]-a[1]);
+  const totalGroups = byCourse.reduce((a,c)=>a+c.groups,0);
+  const unassigned = total - students.filter(s=>COURSES.some(c=>s.courses[c.key]?.group)).length;
+  return (
+    <div>
+      <div style={{marginBottom:24}}><h1>Dashboard</h1><p className="lead">Overview of the UCC CoDE student database.</p></div>
+      <div className="stat-cards">
+        <div className="stat-card"><div className="stat-num">{total}</div><div className="stat-label">Total Students</div></div>
+        <div className="stat-card s-green"><div className="stat-num">{fully}</div><div className="stat-label">Fully Assigned</div></div>
+        <div className="stat-card s-gold"><div className="stat-num">{totalGroups}</div><div className="stat-label">Total Groups</div></div>
+        <div className="stat-card s-purple"><div className="stat-num">{progList.length}</div><div className="stat-label">Programmes</div></div>
+        {unassigned>0&&<div className="stat-card s-red"><div className="stat-num">{unassigned}</div><div className="stat-label">Zero Assignments</div></div>}
+      </div>
+      <div className="dash-section">
+        <h3>Course Enrollment</h3>
+        {byCourse.map(c=>(
+          <div key={c.key} className="bar-row">
+            <div className="bar-label" title={c.label}>{c.code}</div>
+            <div className="bar-track"><div className="bar-fill" style={{width:total?`${c.assigned/total*100}%`:"0%"}}/></div>
+            <div className="bar-val">{c.assigned}/{total}</div>
+            <div className="bar-extra">{c.groups} grp{c.groups!==1?"s":""}</div>
+          </div>
+        ))}
+      </div>
+      <div className="dash-section">
+        <h3>Programme Breakdown</h3>
+        {progList.map(([p,n])=>(
+          <div key={p} className="bar-row">
+            <div className="bar-label" title={p}>{p.replace("BSc ","").replace("BEd ","BEd ").replace("Certificate in ","Cert. ")}</div>
+            <div className="bar-track"><div className="bar-fill alt" style={{width:total?`${n/total*100}%`:"0%"}}/></div>
+            <div className="bar-val">{n}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GROUPS MANAGER
+// ─────────────────────────────────────────────────────────────────────────────
+function GroupsManager({students, onSaveGroupTopic, onSaveStudent}) {
+  const [courseKey,setCourseKey] = useState(COURSES[0].key);
+  const [editing,setEditing] = useState(null);
+  const [draft,setDraft] = useState("");
+  const [expanded,setExpanded] = useState({});
+
+  const course = COURSES.find(c=>c.key===courseKey);
+  const grpMap = {};
+  students.forEach(s=>{
+    const g=s.courses[courseKey]?.group;
+    if(g){
+      if(!grpMap[g]) grpMap[g]={group:g,topic:s.courses[courseKey]?.topic||"",members:[]};
+      grpMap[g].members.push(s);
+    }
+  });
+  const groups = Object.values(grpMap).sort((a,b)=>Number(a.group)-Number(b.group));
+  const unassigned = students.filter(s=>!s.courses[courseKey]?.group);
+
+  const startEdit = (g) => {setEditing(g.group);setDraft(g.topic);};
+  const saveTopic = async (groupNum) => { await onSaveGroupTopic(courseKey,groupNum,draft); setEditing(null); };
+  const toggleExpand = (g) => setExpanded(p=>({...p,[g]:!p[g]}));
+
+  return (
+    <div>
+      <div className="groups-header">
+        <div><h1>Group Management</h1><p className="lead">Edit topics and view members for each course group.</p></div>
+        <select className="sel" value={courseKey} onChange={e=>{setCourseKey(e.target.value);setEditing(null);setExpanded({});}}>
+          {COURSES.map(c=><option key={c.key} value={c.key}>{c.label} ({c.code})</option>)}
+        </select>
+      </div>
+      <div className="groups-meta">
+        <span className="meta-pill">{groups.length} groups</span>
+        <span className="meta-pill">{students.filter(s=>s.courses[courseKey]?.group).length} assigned</span>
+        {unassigned.length>0&&<span className="meta-pill bad">{unassigned.length} unassigned</span>}
+      </div>
+      {groups.length===0
+        ?<div className="empty">No group assignments for {course.label} yet. Use the Wizard to assign students.</div>
+        :<div className="groups-list">
+          {groups.map(g=>(
+            <div key={g.group} className="group-row">
+              <div className="group-row-top">
+                <div className="group-num-badge">Group {g.group}</div>
+                <div className="group-topic-area">
+                  {editing===g.group
+                    ?<div className="topic-edit-row">
+                        <input className="inp sm-inp" style={{flex:1}} value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Topic title…" onKeyDown={e=>{if(e.key==="Enter")saveTopic(g.group);if(e.key==="Escape")setEditing(null);}} autoFocus/>
+                        <button className="btn-sm s" onClick={()=>saveTopic(g.group)}>Save</button>
+                        <button className="btn-sm c" onClick={()=>setEditing(null)}>✕</button>
+                      </div>
+                    :<div className="topic-view-row" onClick={()=>startEdit(g)} title="Click to edit topic">
+                        {g.topic?<span className="g-topic">{g.topic}</span>:<span className="no-topic">No topic — click to add</span>}
+                        <span className="edit-hint">✏️ Edit</span>
+                      </div>
+                  }
+                </div>
+                <div className="group-cnt">{g.members.length} student{g.members.length!==1?"s":""}</div>
+              </div>
+              <button className="toggle-members" onClick={()=>toggleExpand(g.group)}>
+                {expanded[g.group]?"▲ Hide members":"▼ View members"}
+              </button>
+              {expanded[g.group]&&(
+                <ul className="member-list">
+                  {g.members.sort((a,b)=>a.name.localeCompare(b.name)).map(m=>(
+                    <li key={m.id}><span>{m.name}</span><span className="m-idx">{m.indexNumber}</span></li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      }
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WIZARD PANEL
+// ─────────────────────────────────────────────────────────────────────────────
+function WizardPanel({students, onSaveGroupTopic, onSaveStudent}) {
+  const [tool,setTool] = useState(null);
+  const [step,setStep] = useState(1);
+
+  // Quick Assign state
+  const [qaCourse,setQaCourse] = useState(COURSES[0].key);
+  const [qaGroup,setQaGroup] = useState("");
+  const [qaTopic,setQaTopic] = useState("");
+  const [qaSearch,setQaSearch] = useState("");
+  const [qaSelected,setQaSelected] = useState([]);
+  const [qaResult,setQaResult] = useState(null);
+
+  // Bulk Topic state
+  const [btCourse,setBtCourse] = useState(COURSES[0].key);
+  const [btEdits,setBtEdits] = useState({});
+  const [btSaved,setBtSaved] = useState(false);
+
+  // Find Gaps state
+  const [gapCourse,setGapCourse] = useState(COURSES[0].key);
+
+  const qaUnassigned = students
+    .filter(s=>!s.courses[qaCourse]?.group && (s.name.toLowerCase().includes(qaSearch.toLowerCase())||(s.indexNumber||"").toLowerCase().includes(qaSearch.toLowerCase())))
+    .sort((a,b)=>a.name.localeCompare(b.name));
+  const qaExistingGroups = [...new Set(students.map(s=>s.courses[qaCourse]?.group).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
+
+  const toggleQaSel = (id) => setQaSelected(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
+  const selectAll = () => setQaSelected(qaUnassigned.map(s=>s.id));
+  const clearSel = () => setQaSelected([]);
+
+  const doQuickAssign = async () => {
+    let done=0;
+    for(const sid of qaSelected) {
+      const s=students.find(st=>st.id===sid);
+      if(!s)continue;
+      const updated={...s,courses:{...s.courses,[qaCourse]:{group:String(qaGroup),topic:qaTopic}}};
+      await onSaveStudent(updated);
+      done++;
+    }
+    setQaResult(done);
+    setStep(4);
+  };
+
+  const btGroups = React.useMemo(()=>[...new Set(students.map(s=>s.courses[btCourse]?.group).filter(Boolean))]
+    .sort((a,b)=>Number(a)-Number(b))
+    .map(g=>{
+      const sample=students.find(s=>s.courses[btCourse]?.group===g);
+      return {group:g,topic:btEdits[g]!==undefined?btEdits[g]:(sample?.courses[btCourse]?.topic||""),count:students.filter(s=>s.courses[btCourse]?.group===g).length};
+    }),[students,btCourse,btEdits]);
+
+  const doBulkTopics = async () => {
+    for(const [g,t] of Object.entries(btEdits)) await onSaveGroupTopic(btCourse,g,t);
+    setBtEdits({});setBtSaved(true);
+  };
+
+  const gapStudents = students.filter(s=>!s.courses[gapCourse]?.group).sort((a,b)=>a.name.localeCompare(b.name));
+
+  const reset = () => {setTool(null);setStep(1);setQaSelected([]);setQaSearch("");setQaGroup("");setQaTopic("");setQaResult(null);setBtEdits({});setBtSaved(false);};
+
+  if(!tool) return (
+    <div>
+      <div style={{marginBottom:24}}><h1>Wizard</h1><p className="lead">Accelerate repetitive tasks with guided tools.</p></div>
+      <div className="wizard-tools">
+        <div className="wizard-tool" onClick={()=>{setTool("qa");setStep(1);}}>
+          <div className="tool-icon">⚡</div>
+          <div className="tool-title">Quick Assign</div>
+          <div className="tool-desc">Assign multiple unassigned students to a group in any course in one go.</div>
+        </div>
+        <div className="wizard-tool" onClick={()=>{setTool("bt");setStep(1);}}>
+          <div className="tool-icon">✏️</div>
+          <div className="tool-title">Bulk Edit Topics</div>
+          <div className="tool-desc">Edit all group topics for a course on one screen — no clicking around.</div>
+        </div>
+        <div className="wizard-tool" onClick={()=>{setTool("gaps");setStep(1);}}>
+          <div className="tool-icon">🔍</div>
+          <div className="tool-title">Find Unassigned</div>
+          <div className="tool-desc">Instantly see which students have no group for any course.</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // QUICK ASSIGN ─────────────────────────────────────────────────────────────
+  if(tool==="qa") {
+    const steps=["Course","Group","Students","Done"];
+    const stepBar = (
+      <div className="step-bar">
+        {steps.map((l,i)=>(
+          <React.Fragment key={l}>
+            <div className={"s-dot"+(step>i+1?" done":step===i+1?" active":"")}>{step>i+1?"✓":i+1}</div>
+            {i<steps.length-1&&<div className={"s-line"+(step>i+1?" done":"")}/>}
+          </React.Fragment>
+        ))}
+      </div>
+    );
+    return (
+      <div className="wiz-shell">
+        <div className="wiz-hdr">
+          <span className="wiz-title">⚡ Quick Assign Wizard</span>
+          <button className="wiz-back" onClick={reset}>← Back to Tools</button>
+        </div>
+        <div className="wiz-body">
+          {stepBar}
+          {step===1&&(
+            <div>
+              <label className="lbl">Select Course</label>
+              <p className="lead" style={{marginBottom:12}}>Which course do you want to assign students to?</p>
+              <select className="inp" value={qaCourse} onChange={e=>setQaCourse(e.target.value)}>
+                {COURSES.map(c=><option key={c.key} value={c.key}>{c.label} ({c.code})</option>)}
+              </select>
+              <p className="lead" style={{marginTop:8}}>{students.filter(s=>!s.courses[qaCourse]?.group).length} students currently unassigned in this course.</p>
+              <div className="wiz-actions"><button className="btn-next" onClick={()=>setStep(2)}>Next →</button></div>
+            </div>
+          )}
+          {step===2&&(
+            <div>
+              <label className="lbl">Select or Create Group</label>
+              <p className="lead" style={{marginBottom:12}}>Type a group number. Existing groups shown below.</p>
+              <input className="inp" value={qaGroup} onChange={e=>setQaGroup(e.target.value)} placeholder="e.g. 8"/>
+              {qaExistingGroups.length>0&&<div style={{marginTop:10,display:"flex",gap:6,flexWrap:"wrap"}}>
+                {qaExistingGroups.map(g=><button key={g} className={"grp-badge"} style={{cursor:"pointer",border:qaGroup===g?"2px solid var(--teal)":"2px solid transparent"}} onClick={()=>setQaGroup(g)}>Group {g}</button>)}
+              </div>}
+              <label className="lbl" style={{marginTop:14,display:"block"}}>Topic (optional)</label>
+              <input className="inp" value={qaTopic} onChange={e=>setQaTopic(e.target.value)} placeholder="Group topic…"/>
+              <div className="wiz-actions">
+                <button className="btn-cancel" onClick={()=>setStep(1)}>← Back</button>
+                <button className="btn-next" disabled={!qaGroup.trim()} onClick={()=>setStep(3)}>Next →</button>
+              </div>
+            </div>
+          )}
+          {step===3&&(
+            <div>
+              <label className="lbl">Select Students to Assign to Group {qaGroup}</label>
+              <div style={{display:"flex",gap:8,marginTop:8}}>
+                <input className="inp sm-inp" style={{flex:1}} placeholder="Search name or index…" value={qaSearch} onChange={e=>setQaSearch(e.target.value)}/>
+                <button className="btn-sm s" onClick={selectAll}>All</button>
+                <button className="btn-sm c" onClick={clearSel}>None</button>
+              </div>
+              {qaUnassigned.length===0?<div className="empty" style={{padding:"30px 0"}}>No unassigned students match.</div>
+                :<div className="pick-list">
+                  {qaUnassigned.map(s=>(
+                    <div key={s.id} className={"pick-item"+(qaSelected.includes(s.id)?" sel":"")} onClick={()=>toggleQaSel(s.id)}>
+                      <span>{qaSelected.includes(s.id)?"☑":"☐"}</span>
+                      <span className="pick-name">{s.name}</span>
+                      <span className="pick-idx">{s.indexNumber}</span>
+                    </div>
+                  ))}
+                </div>
+              }
+              <p style={{fontSize:12,color:"var(--sub)",fontFamily:"Arial,sans-serif",marginTop:8}}>{qaSelected.length} selected</p>
+              <div className="wiz-actions">
+                <button className="btn-cancel" onClick={()=>setStep(2)}>← Back</button>
+                <button className="btn-next" disabled={qaSelected.length===0||!qaGroup} onClick={doQuickAssign}>Assign {qaSelected.length} Students →</button>
+              </div>
+            </div>
+          )}
+          {step===4&&(
+            <div className="success-box">
+              <div className="s-icon">✅</div>
+              <div className="s-msg">{qaResult} student{qaResult!==1?"s":""} assigned to Group {qaGroup}!</div>
+              <div className="s-sub">They now appear under {COURSES.find(c=>c.key===qaCourse)?.label} → Group {qaGroup}.</div>
+              <div style={{marginTop:24,display:"flex",gap:12,justifyContent:"center"}}>
+                <button className="btn-cancel" onClick={()=>{setStep(1);setQaSelected([]);setQaResult(null);}}>Assign More</button>
+                <button className="btn-next" onClick={reset}>← Back to Tools</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // BULK TOPIC ────────────────────────────────────────────────────────────────
+  if(tool==="bt") return (
+    <div className="wiz-shell">
+      <div className="wiz-hdr">
+        <span className="wiz-title">✏️ Bulk Edit Topics</span>
+        <button className="wiz-back" onClick={reset}>← Back to Tools</button>
+      </div>
+      <div className="wiz-body">
+        <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:16,flexWrap:"wrap"}}>
+          <label className="lbl">Course:</label>
+          <select className="sel" value={btCourse} onChange={e=>{setBtCourse(e.target.value);setBtEdits({});setBtSaved(false);}}>
+            {COURSES.map(c=><option key={c.key} value={c.key}>{c.label} ({c.code})</option>)}
+          </select>
+          <span style={{color:"var(--sub)",fontSize:12,fontFamily:"Arial,sans-serif"}}>{btGroups.length} groups</span>
+        </div>
+        {btGroups.length===0?<div className="empty">No groups assigned for this course yet.</div>
+          :<React.Fragment>
+            <p className="lead" style={{marginBottom:12}}>Edit any topic below. Changes are saved when you click Save All.</p>
+            <div className="bulk-topic-grid">
+              {btGroups.map(g=>(
+                <div key={g.group} className="bt-row">
+                  <div className="bt-grp">Grp {g.group}</div>
+                  <input className="bt-inp" value={g.topic} onChange={e=>setBtEdits(p=>({...p,[g.group]:e.target.value}))} placeholder="Topic…"/>
+                  <div className="bt-cnt">{g.count} student{g.count!==1?"s":""}</div>
+                </div>
+              ))}
+            </div>
+            {btSaved&&<p className="msg-ok" style={{marginTop:10}}>✅ All topics saved successfully!</p>}
+            <div className="wiz-actions">
+              <button className="btn-cancel" onClick={reset}>Cancel</button>
+              <button className="btn-next" disabled={Object.keys(btEdits).length===0} onClick={doBulkTopics}>Save All Topics</button>
+            </div>
+          </React.Fragment>
+        }
+      </div>
+    </div>
+  );
+
+  // FIND GAPS ─────────────────────────────────────────────────────────────────
+  if(tool==="gaps") return (
+    <div className="wiz-shell">
+      <div className="wiz-hdr">
+        <span className="wiz-title">🔍 Find Unassigned Students</span>
+        <button className="wiz-back" onClick={reset}>← Back to Tools</button>
+      </div>
+      <div className="wiz-body">
+        <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:16,flexWrap:"wrap"}}>
+          <label className="lbl">Course:</label>
+          <select className="sel" value={gapCourse} onChange={e=>setGapCourse(e.target.value)}>
+            {COURSES.map(c=><option key={c.key} value={c.key}>{c.label} ({c.code})</option>)}
+          </select>
+        </div>
+        {gapStudents.length===0
+          ?<div className="success-box"><div className="s-icon">🎉</div><div className="s-msg">All students assigned!</div><div className="s-sub">Every student has a group assignment for {COURSES.find(c=>c.key===gapCourse)?.label}.</div></div>
+          :<React.Fragment>
+            <p className="lead" style={{marginBottom:12}}><b>{gapStudents.length}</b> student{gapStudents.length!==1?"s":""} with no group assignment for {COURSES.find(c=>c.key===gapCourse)?.label}:</p>
+            <div className="pick-list" style={{maxHeight:400}}>
+              {gapStudents.map(s=>(
+                <div key={s.id} className="pick-item" style={{cursor:"default"}}>
+                  <span className="pick-name">{s.name}</span>
+                  <span className="pick-idx">{s.indexNumber}</span>
+                  <span style={{fontSize:11,color:"var(--sub)",fontFamily:"Arial,sans-serif"}}>{s.program?.replace("BSc ","").replace("Certificate in ","Cert. ")||""}</span>
+                </div>
+              ))}
+            </div>
+          </React.Fragment>
+        }
+      </div>
+    </div>
+  );
+
+  return null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SETTINGS PANEL
+// ─────────────────────────────────────────────────────────────────────────────
+function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChange, students, onDeleteAll}) {
+  const [form,setForm] = useState({...settings});
+  const [pwd,setPwd] = useState({cur:"",nw:"",cf:""});
+  const [pwdMsg,setPwdMsg] = useState("");
+  const [saveMsg,setSaveMsg] = useState("");
+
+  const upd = (k,v) => setForm(p=>({...p,[k]:v}));
+
+  const handleSaveAppearance = () => {
+    onSaveSettings(form);
+    setSaveMsg("✅ Appearance saved!");
+    setTimeout(()=>setSaveMsg(""),3000);
+  };
+
+  const handlePwd = () => {
+    if(pwd.cur!==adminPassword){setPwdMsg("Current password is incorrect.");return;}
+    if(pwd.nw.length<4){setPwdMsg("New password must be at least 4 characters.");return;}
+    if(pwd.nw!==pwd.cf){setPwdMsg("New passwords do not match.");return;}
+    onPasswordChange(pwd.nw);
+    setPwd({cur:"",nw:"",cf:""});
+    setPwdMsg("✅ Password changed successfully!");
+    setTimeout(()=>setPwdMsg(""),4000);
+  };
+
+  return (
+    <div className="settings-page">
+      <div style={{marginBottom:24}}><h1>Settings</h1><p className="lead">Customise the portal, change your password, and manage data.</p></div>
+
+      {/* APPEARANCE */}
+      <div className="set-sec">
+        <h3>🎨 Portal Appearance</h3>
+        <p className="s-desc">Customise the header title and accent colours shown across the student portal.</p>
+        <div className="set-row">
+          <div><div className="set-lbl">Portal Title</div><div className="set-sub">Shown in the header</div></div>
+          <input className="inp" style={{maxWidth:260}} value={form.portalTitle||""} onChange={e=>upd("portalTitle",e.target.value)}/>
+        </div>
+        <div className="set-row">
+          <div><div className="set-lbl">Portal Subtitle</div><div className="set-sub">Shown below the title</div></div>
+          <input className="inp" style={{maxWidth:260}} value={form.portalSub||""} onChange={e=>upd("portalSub",e.target.value)}/>
+        </div>
+        <div className="set-row">
+          <div><div className="set-lbl">Accent / Primary Colour</div><div className="set-sub">Used for nav, tables, buttons</div></div>
+          <div className="color-row">
+            <div className="color-preview" style={{background:form.accentColor||"#1b6ca8"}}/>
+            <input type="color" className="inp" style={{width:70,padding:3}} value={form.accentColor||"#1b6ca8"} onChange={e=>upd("accentColor",e.target.value)}/>
+          </div>
+        </div>
+        <div className="set-row">
+          <div><div className="set-lbl">Highlight / Gold Colour</div><div className="set-sub">Used for badges, add button</div></div>
+          <div className="color-row">
+            <div className="color-preview" style={{background:form.goldColor||"#f0a500"}}/>
+            <input type="color" className="inp" style={{width:70,padding:3}} value={form.goldColor||"#f0a500"} onChange={e=>upd("goldColor",e.target.value)}/>
+          </div>
+        </div>
+        <div className="set-row">
+          <div><div className="set-lbl">Header Background</div><div className="set-sub">Top navigation bar colour</div></div>
+          <div className="color-row">
+            <div className="color-preview" style={{background:form.navyColor||"#0d1b2a"}}/>
+            <input type="color" className="inp" style={{width:70,padding:3}} value={form.navyColor||"#0d1b2a"} onChange={e=>upd("navyColor",e.target.value)}/>
+          </div>
+        </div>
+        <div style={{marginTop:14}}>
+          <div style={{fontSize:12,color:"var(--sub)",fontFamily:"Arial,sans-serif",marginBottom:6}}>Preview</div>
+          <div className="preview-hdr" style={{background:form.navyColor||"#0d1b2a"}}>
+            <div className="preview-mk" style={{background:form.goldColor||"#f0a500",color:form.navyColor||"#0d1b2a"}}>{(form.portalTitle||"UCC").substring(0,3).toUpperCase()}</div>
+            <div><div className="preview-title">{form.portalTitle||"UCC CoDE"}</div><div className="preview-sub">{form.portalSub||"BSc IT & BEd IT · Student Database"}</div></div>
+          </div>
+        </div>
+        {saveMsg&&<p className="msg-ok" style={{marginTop:10}}>{saveMsg}</p>}
+        <div className="set-save-row"><button className="btn-save" onClick={handleSaveAppearance}>Save Appearance</button></div>
+      </div>
+
+      {/* SECURITY */}
+      <div className="set-sec">
+        <h3>🔐 Security — Change Password</h3>
+        <p className="s-desc">Update the admin panel password. Use at least 4 characters.</p>
+        <div className="pwd-fields">
+          <input type="password" className="inp" placeholder="Current password" value={pwd.cur} onChange={e=>setPwd(p=>({...p,cur:e.target.value}))}/>
+          <input type="password" className="inp" placeholder="New password" value={pwd.nw} onChange={e=>setPwd(p=>({...p,nw:e.target.value}))}/>
+          <input type="password" className="inp" placeholder="Confirm new password" value={pwd.cf} onChange={e=>setPwd(p=>({...p,cf:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&handlePwd()}/>
+        </div>
+        {pwdMsg&&<p className={pwdMsg.startsWith("✅")?"msg-ok":"msg-err"}>{pwdMsg}</p>}
+        <button className="btn-save" style={{marginTop:14}} onClick={handlePwd}>Change Password</button>
+      </div>
+
+      {/* DATABASE INFO */}
+      <div className="set-sec">
+        <h3>📊 Database Info</h3>
+        <p className="s-desc">Current status of your data storage.</p>
+        <div className="set-row"><div className="set-lbl">Storage Mode</div><span className={window.firebaseReady?"badge-ok":"badge-warn"}>{window.firebaseReady?"● Firebase Cloud":"● Local Browser"}</span></div>
+        <div className="set-row"><div className="set-lbl">Total Students</div><span style={{fontWeight:700,fontFamily:"Arial,sans-serif"}}>{students.length}</span></div>
+        <div className="set-row"><div className="set-lbl">Firebase Project</div><span style={{fontSize:12,fontFamily:"Arial,sans-serif",color:"var(--sub)"}}>{window.firebaseReady?"database-ucc-it":"Not connected"}</span></div>
+      </div>
+
+      {/* DANGER ZONE */}
+      <div className="set-sec set-danger">
+        <h3>⚠️ Danger Zone</h3>
+        <p className="s-desc">These actions are irreversible. Proceed with extreme caution.</p>
+        <div className="set-row">
+          <div><div className="set-lbl">Clear Entire Database</div><div className="set-sub">Permanently deletes all {students.length} student records</div></div>
+          <button className="btn-danger" onClick={()=>{if(window.confirm(`Delete ALL ${students.length} student records? This CANNOT be undone.`))onDeleteAll();}}>Delete All Records</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ADMIN PANEL
 // ─────────────────────────────────────────────────────────────────────────────
-function AdminPanel({students,onAdd,onEdit,onDelete,onImport}){
+function AdminPanel({students,onAdd,onEdit,onDelete,onImport,onSaveStudent,onSaveGroupTopic,settings,onSaveSettings,adminPassword,onPasswordChange,onDeleteAll}){
+  const [adminTab,setAdminTab] = useState("dashboard");
   const [search,setSearch]=useState("");
   const [sortBy,setSortBy]=useState("name");
   const [delConfirm,setDelConfirm]=useState(null);
@@ -594,6 +1211,7 @@ function AdminPanel({students,onAdd,onEdit,onDelete,onImport}){
     l.sort((a,b)=>a[sortBy==="name"?"name":"program"].localeCompare(b[sortBy==="name"?"name":"program"]));
     return l;
   },[students,search,sortBy]);
+
   const handleFile=e=>{
     const file=e.target.files[0];if(!file)return;
     const reader=new FileReader();
@@ -613,6 +1231,7 @@ function AdminPanel({students,onAdd,onEdit,onDelete,onImport}){
     };
     reader.readAsBinaryString(file);
   };
+
   const handleSeed = async () => {
     const newOnes = SEED_STUDENTS.filter(s => !students.some(ex => ex.indexNumber === s.indexNumber));
     const skipped = SEED_STUDENTS.length - newOnes.length;
@@ -620,7 +1239,6 @@ function AdminPanel({students,onAdd,onEdit,onDelete,onImport}){
     if (!window.confirm(`Load ${newOnes.length} students into Firebase?${skipped > 0 ? `\n(${skipped} already exist and will be skipped.)` : ""}`)) return;
     try {
       if (window.db) {
-        // Firestore allows max 500 ops per batch — split into chunks
         const chunkSize = 400;
         for (let i = 0; i < newOnes.length; i += chunkSize) {
           const chunk = newOnes.slice(i, i + chunkSize);
@@ -629,87 +1247,101 @@ function AdminPanel({students,onAdd,onEdit,onDelete,onImport}){
           await batch.commit();
         }
         alert(`✅ Done! ${newOnes.length} students loaded into Firebase.`);
-      } else {
-        // localStorage fallback
-        onImport(newOnes);
-      }
-    } catch(err) {
-      alert("Error seeding: " + err.message);
-    }
+      } else { onImport(newOnes); }
+    } catch(err) { alert("Error seeding: " + err.message); }
   };
+
+  const TABS = [
+    ["dashboard","📊 Dashboard"],
+    ["students","👥 Students"],
+    ["groups","📚 Groups"],
+    ["wizard","🧙 Wizard"],
+    ["settings","⚙️ Settings"],
+  ];
 
   return (
     <div>
-      <div className="admin-top">
-        <div><h1>Admin Dashboard</h1><p className="lead">{students.length} students in database</p></div>
-        <div className="admin-btns">
-          <button className="btn-import" onClick={()=>fileRef.current.click()}><ImportIco/> Import Excel</button>
-          <input ref={fileRef} type="file" accept=".xlsx,.xls" style={{display:"none"}} onChange={handleFile}/>
-          <button className="btn-excel" onClick={()=>exportAllXLSX(students)}><ExcelIco/> Export All</button>
-          <button className="btn-add" onClick={onAdd}><PlusIco/> Add Student</button>
-          <button className="btn-seed" onClick={handleSeed} title="Load all 220 students from all 7 courses">🌱 Seed Database</button>
-        </div>
+      <div className="admin-inner-tabs">
+        {TABS.map(([k,l])=>(
+          <button key={k} className={"ai-tab"+(adminTab===k?" on":"")} onClick={()=>setAdminTab(k)}>{l}</button>
+        ))}
       </div>
-      <div className="filter-bar">
-        <div className="search-wrap">
-          <SearchIco/>
-          <input className="search-input" placeholder="Search students…" value={search} onChange={e=>setSearch(e.target.value)}/>
-          {search&&<button className="x-small" onClick={()=>setSearch("")}>✕</button>}
-        </div>
-        <select className="sel" value={sortBy} onChange={e=>setSortBy(e.target.value)}>
-          <option value="name">Sort: Name A–Z</option>
-          <option value="program">Sort: Programme</option>
-        </select>
-      </div>
-      <div className="tbl-wrap">
-        <table>
-          <thead><tr>
-            <th>#</th><th>Full Name</th><th>Index No.</th><th>Programme</th>
-            {COURSES.map(c=><th key={c.key} style={{fontSize:10}}>{c.code}</th>)}
-            <th>Actions</th>
-          </tr></thead>
-          <tbody>
-            {filtered.map((s,i)=>(
-              <tr key={s.id} className={i%2===0?"even":""}>
-                <td>{i+1}</td><td style={{fontWeight:600}}>{s.name}</td>
-                <td>{s.indexNumber||<span className="dash">—</span>}</td>
-                <td>{s.program||<span className="dash">—</span>}</td>
-                {COURSES.map(c=>(
-                  <td key={c.key}>{s.courses?.[c.key]?.group?<span className="grp-badge">Grp {s.courses[c.key].group}</span>:<span className="dash">—</span>}</td>
-                ))}
-                <td>
-                  <div style={{display:"flex",gap:5}}>
-                    <button className="btn-edit" onClick={()=>onEdit(s)} title="Edit"><EditIco/></button>
-                    <button className="btn-del" onClick={()=>setDelConfirm(s.id)} title="Delete"><DelIco/></button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filtered.length===0&&<div className="empty">No students found.</div>}
-      </div>
-      {delConfirm&&(
-        <div className="overlay" onClick={e=>e.target===e.currentTarget&&setDelConfirm(null)}>
-          <div className="modal" style={{maxWidth:380,padding:32,display:"flex",flexDirection:"column",gap:16}}>
-            <h3 style={{color:"var(--navy)",margin:0}}>Delete Student?</h3>
-            <p style={{color:"#555",margin:0,fontSize:14}}>Permanently remove <b>{students.find(s=>s.id===delConfirm)?.name}</b>? This cannot be undone.</p>
-            <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
-              <button className="btn-cancel" onClick={()=>setDelConfirm(null)}>Cancel</button>
-              <button className="btn-save" style={{background:"var(--red)",width:"auto"}} onClick={()=>{onDelete(delConfirm);setDelConfirm(null);}}>Delete</button>
+
+      {adminTab==="dashboard"&&<AdminDashboard students={students}/>}
+
+      {adminTab==="students"&&(
+        <div>
+          <div className="admin-top">
+            <div><h1>Student Management</h1><p className="lead">{students.length} students in database</p></div>
+            <div className="admin-btns">
+              <button className="btn-import" onClick={()=>fileRef.current.click()}><ImportIco/> Import Excel</button>
+              <input ref={fileRef} type="file" accept=".xlsx,.xls" style={{display:"none"}} onChange={handleFile}/>
+              <button className="btn-excel" onClick={()=>exportAllXLSX(students)}><ExcelIco/> Export All</button>
+              <button className="btn-add" onClick={onAdd}><PlusIco/> Add Student</button>
+              <button className="btn-seed" onClick={handleSeed} title="Load all 218 students from source PDFs">🌱 Seed Database</button>
             </div>
           </div>
+          <div className="filter-bar">
+            <div className="search-wrap">
+              <SearchIco/>
+              <input className="search-input" placeholder="Search students…" value={search} onChange={e=>setSearch(e.target.value)}/>
+              {search&&<button className="x-small" onClick={()=>setSearch("")}>✕</button>}
+            </div>
+            <select className="sel" value={sortBy} onChange={e=>setSortBy(e.target.value)}>
+              <option value="name">Sort: Name A–Z</option>
+              <option value="program">Sort: Programme</option>
+            </select>
+          </div>
+          <p className="stat">{filtered.length} of {students.length} students</p>
+          {students.length===0?<div className="empty">No students yet — click "Add Student" or "Seed Database".</div>:(
+            <div className="tbl-wrap">
+              <table>
+                <thead><tr><th>#</th><th>Name</th><th>Index Number</th><th>Programme</th><th>Groups</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {filtered.map((s,i)=>(
+                    <tr key={s.id} className={i%2===0?"even":""}>
+                      <td style={{color:"var(--sub)",fontSize:11}}>{i+1}</td>
+                      <td style={{fontWeight:600}}>{s.name}</td>
+                      <td style={{fontFamily:"monospace",fontSize:12}}>{s.indexNumber||<span className="dash">—</span>}</td>
+                      <td style={{fontSize:12}}>{s.program||<span className="dash">—</span>}</td>
+                      <td>
+                        <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                          {COURSES.filter(c=>s.courses[c.key]?.group).map(c=>(
+                            <span key={c.key} className="grp-badge" title={c.label}>{c.code} G{s.courses[c.key].group}</span>
+                          ))}
+                          {COURSES.filter(c=>s.courses[c.key]?.group).length===0&&<span className="dash">—</span>}
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{display:"flex",gap:6}}>
+                          <button className="btn-edit" onClick={()=>onEdit(s)}>✏️</button>
+                          {delConfirm===s.id
+                            ?<React.Fragment><button className="btn-del" onClick={()=>{onDelete(s.id);setDelConfirm(null);}}>Confirm</button><button className="btn-cancel" style={{padding:"4px 8px",fontSize:12}} onClick={()=>setDelConfirm(null)}>Cancel</button></React.Fragment>
+                            :<button className="btn-del" onClick={()=>setDelConfirm(s.id)}>🗑️</button>
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
+
+      {adminTab==="groups"&&<GroupsManager students={students} onSaveGroupTopic={onSaveGroupTopic} onSaveStudent={onSaveStudent}/>}
+      {adminTab==="wizard"&&<WizardPanel students={students} onSaveGroupTopic={onSaveGroupTopic} onSaveStudent={onSaveStudent}/>}
+      {adminTab==="settings"&&<SettingsPanel settings={settings} onSaveSettings={onSaveSettings} adminPassword={adminPassword} onPasswordChange={onPasswordChange} students={students} onDeleteAll={onDeleteAll}/>}
     </div>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ROOT APP
+// APP
 // ─────────────────────────────────────────────────────────────────────────────
 function App(){
-  const {students,loading,saving,dbMode,saveStudent,deleteStudent,importStudents} = useStudents();
+  const {students,loading,saving,dbMode,saveStudent,deleteStudent,importStudents,saveGroupTopic} = useStudents();
   const [view,setView]=useState("portal");
   const [authed,setAuthed]=useState(false);
   const [pw,setPw]=useState("");
@@ -718,8 +1350,41 @@ function App(){
   const [search,setSearch]=useState("");
   const [progFilter,setProgFilter]=useState("all");
 
+  // Dynamic admin password (stored in localStorage)
+  const [adminPassword,setAdminPassword] = useState(()=>localStorage.getItem("admin_pw")||"StAnne2025");
+
+  // Portal appearance settings
+  const DEFAULT_SETTINGS = {portalTitle:"UCC CoDE",portalSub:"BSc IT \u0026 BEd IT \u00b7 Group \u0026 Assignment Tracker",accentColor:"#1b6ca8",goldColor:"#f0a500",navyColor:"#0d1b2a"};
+  const [portalSettings,setPortalSettings] = useState(()=>{
+    try{const s=localStorage.getItem("portal_cfg");return s?{...DEFAULT_SETTINGS,...JSON.parse(s)}:DEFAULT_SETTINGS;}
+    catch{return DEFAULT_SETTINGS;}
+  });
+
+  const applySettings = useCallback((s)=>{
+    document.documentElement.style.setProperty("--teal",s.accentColor||"#1b6ca8");
+    document.documentElement.style.setProperty("--gold",s.goldColor||"#f0a500");
+    document.documentElement.style.setProperty("--navy",s.navyColor||"#0d1b2a");
+  },[]);
+
+  useEffect(()=>applySettings(portalSettings),[portalSettings]);
+
+  const handleSaveSettings = (s)=>{
+    setPortalSettings(s);
+    localStorage.setItem("portal_cfg",JSON.stringify(s));
+    applySettings(s);
+  };
+  const handlePasswordChange = (p)=>{setAdminPassword(p);localStorage.setItem("admin_pw",p);};
+  const handleDeleteAll = useCallback(async ()=>{
+    if(window.db){
+      const snap=await window.db.collection("students").get();
+      const batch=window.db.batch();
+      snap.docs.forEach(d=>batch.delete(d.ref));
+      await batch.commit();
+    } else { localStorage.removeItem("students_db"); }
+  },[]);
+
   const handleSave=useCallback(async s=>{await saveStudent(s);setModal(null);},[saveStudent]);
-  const handleLogin=()=>{ if(pw===ADMIN_PASSWORD){setAuthed(true);setPwErr("");setView("admin");setPw("");}else setPwErr("Incorrect password."); };
+  const handleLogin=()=>{ if(pw===adminPassword){setAuthed(true);setPwErr("");setView("admin");setPw("");}else setPwErr("Incorrect password."); };
 
   const portalList=useMemo(()=>{
     let l=[...students];
@@ -741,14 +1406,14 @@ function App(){
       <header className="hdr">
         <div className="hdr-inner">
           <div className="logo">
-            <div className="logo-mk">UCC</div>
+            <div className="logo-mk">{(portalSettings.portalTitle||"UCC").substring(0,3).toUpperCase()}</div>
             <div>
-              <div className="logo-title">CoDE Student Database</div>
-              <div className="logo-sub">BSc IT &amp; BEd IT · Group &amp; Assignment Tracker</div>
+              <div className="logo-title">{portalSettings.portalTitle||"UCC CoDE"}</div>
+              <div className="logo-sub">{portalSettings.portalSub||"BSc IT & BEd IT · Group & Assignment Tracker"}</div>
             </div>
           </div>
           <nav>
-            {[["portal","🎓 Student Portal"],["courses","📚 Course Views"],[authed?"admin":"login",authed?"🔓 Admin":"🔒 Admin"]].map(([v,l])=>(
+            {[["portal","\ud83c\udf93 Student Portal"],["courses","\ud83d\udcda Course Views"],[authed?"admin":"login",authed?"\ud83d\udd13 Admin":"\ud83d\udd12 Admin"]].map(([v,l])=>(
               <button key={v} className={"nav-btn"+(view===v?" on":"")} onClick={()=>{if(v==="admin"&&!authed)setView("login");else setView(v);}}>{l}</button>
             ))}
             {authed&&<button className="logout-btn" onClick={()=>{setAuthed(false);setView("portal");}}>Sign Out</button>}
@@ -758,10 +1423,9 @@ function App(){
       </header>
 
       <main>
-        {/* CONFIG NOTICE when Firebase not set up */}
         {!window.firebaseReady && (
           <div className="config-notice">
-            <h3>⚠️ Firebase Not Configured — Running in Local Mode</h3>
+            <h3>\u26a0\ufe0f Firebase Not Configured \u2014 Running in Local Mode</h3>
             <p>Data is currently saving to this browser only. To enable the cloud database (so all classmates can see updates), open <code>index.html</code> in a text editor, find the <code>firebaseConfig</code> section, and replace the placeholder values with your Firebase project credentials.</p>
             <p style={{marginTop:8}}>See setup instructions at the top of the HTML file, or ask your IT admin (JB IT Solutions) to configure it.</p>
           </div>
@@ -773,8 +1437,8 @@ function App(){
             <div className="filter-bar">
               <div className="search-wrap">
                 <SearchIco/>
-                <input className="search-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by name, group, topic…"/>
-                {search&&<button className="x-small" onClick={()=>setSearch("")}>✕</button>}
+                <input className="search-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by name, group, topic\u2026"/>
+                {search&&<button className="x-small" onClick={()=>setSearch("")}>\u2715</button>}
               </div>
               <select className="sel" value={progFilter} onChange={e=>setProgFilter(e.target.value)}>
                 <option value="all">All Programmes</option>
@@ -796,7 +1460,7 @@ function App(){
               <p className="lead" style={{textAlign:"center"}}>Enter the administrator password.</p>
               <input type="password" className="inp" placeholder="Password" value={pw} onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()}/>
               {pwErr&&<p className="err">{pwErr}</p>}
-              <button className="btn-save" style={{width:"100%"}} onClick={handleLogin}>Unlock Admin Panel →</button>
+              <button className="btn-save" style={{width:"100%"}} onClick={handleLogin}>Unlock Admin Panel \u2192</button>
             </div>
           </div>
         )}
@@ -808,6 +1472,13 @@ function App(){
             onEdit={s=>setModal(JSON.parse(JSON.stringify(s)))}
             onDelete={deleteStudent}
             onImport={importStudents}
+            onSaveStudent={saveStudent}
+            onSaveGroupTopic={saveGroupTopic}
+            settings={portalSettings}
+            onSaveSettings={handleSaveSettings}
+            adminPassword={adminPassword}
+            onPasswordChange={handlePasswordChange}
+            onDeleteAll={handleDeleteAll}
           />
         )}
       </main>
@@ -817,13 +1488,13 @@ function App(){
       {saving && (
         <div className="saving-toast">
           <span className="spinner"/>
-          Saving to {window.firebaseReady?"Firebase cloud":"local storage"}…
+          Saving to {window.firebaseReady?"Firebase cloud":"local storage"}\u2026
         </div>
       )}
 
       <footer>
-        UCC CoDE Student Group Database &nbsp;·&nbsp; BSc IT &amp; BEd IT &nbsp;·&nbsp; JB IT Solutions &nbsp;·&nbsp; {new Date().getFullYear()}
-        &nbsp;·&nbsp; <span style={{color:window.firebaseReady?"var(--green)":"#f0a500"}}>{window.firebaseReady?"● Firebase Cloud Active":"● Local Mode (Firebase not configured)"}</span>
+        UCC CoDE Student Group Database \u00a0\u00b7\u00a0 BSc IT &amp; BEd IT \u00a0\u00b7\u00a0 JB IT Solutions \u00a0\u00b7\u00a0 {new Date().getFullYear()}
+        \u00a0\u00b7\u00a0 <span style={{color:window.firebaseReady?"var(--green)":"#f0a500"}}>{window.firebaseReady?"\u25cf Firebase Cloud Active":"\u25cf Local Mode (Firebase not configured)"}</span>
       </footer>
     </React.Fragment>
   );
