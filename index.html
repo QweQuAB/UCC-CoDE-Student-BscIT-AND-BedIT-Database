@@ -179,14 +179,15 @@
     measurementId: "G-HYV3LXB1KB"
   };
 
-  let db = null;
-  let firebaseReady = false;
+  // Attach to window so React (Babel) code can access them
+  window.db = null;
+  window.firebaseReady = false;
 
   try {
     firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    // Test if config is real (not placeholders)
-    firebaseReady = firebaseConfig.apiKey.startsWith("AIza");
+    window.db = firebase.firestore();
+    window.firebaseReady = firebaseConfig.apiKey.startsWith("AIza");
+    console.log("Firebase connected:", firebaseConfig.projectId);
   } catch(e) {
     console.warn("Firebase init failed:", e);
   }
