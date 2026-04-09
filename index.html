@@ -1444,73 +1444,38 @@ function WizardPanel({students, onSaveGroupTopic, onSaveStudent}) {
 // ─────────────────────────────────────────────────────────────────────────────
 // SETTINGS PANEL
 // ─────────────────────────────────────────────────────────────────────────────
-function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChange, students, onDeleteAll, onSaveMeta, onSaveWaLinks}) {
-  const [form,setForm] = useState({...settings});
-  const [metaPrograms,setMetaPrograms] = useState(()=>{
-    try{const s=localStorage.getItem("display_meta");const m=s?JSON.parse(s):{};
-    return PROGRAMS.map(p=>({orig:p,display:m.programs?.[p]||p}));}catch{return PROGRAMS.map(p=>({orig:p,display:p}));}
-  });
-  const [metaCourses,setMetaCourses] = useState(()=>{
-    try{const s=localStorage.getItem("display_meta");const m=s?JSON.parse(s):{};
-    return COURSES.map(c=>({key:c.key,label:m.courses?.[c.key]?.label||c.label,code:m.courses?.[c.key]?.code||c.code}));}catch{return COURSES.map(c=>({key:c.key,label:c.label,code:c.code}));}
-  });
-  const [waLinks,setWaLinks] = useState(()=>{
-    try{const s=localStorage.getItem("wa_links");return s?JSON.parse(s):{groups:{},programmes:{},centres:{}};}catch{return {groups:{},programmes:{},centres:{}};}
-  });
-  const [metaMsg,setMetaMsg] = useState("");
-  const [waMsg,setWaMsg] = useState("");
-  const [metaTab,setMetaTab] = useState("programmes");
-
-  const saveMeta = () => {
-    const meta = {
-      programs: Object.fromEntries(metaPrograms.map(p=>[p.orig,p.display])),
-      courses: Object.fromEntries(metaCourses.map(c=>[c.key,{label:c.label,code:c.code}]))
-    };
-    onSaveMeta(meta);
-    setMetaMsg("✅ Meta saved!"); setTimeout(()=>setMetaMsg(""),3000);
-  };
-  const saveWa = () => {
-    onSaveWaLinks(waLinks);
-    setWaMsg("✅ WhatsApp links saved!"); setTimeout(()=>setWaMsg(""),3000);
-  };
-  const updateWa = (type,key,val) => setWaLinks(prev=>({...prev,[type]:{...prev[type],[key]:val}}));
-
-  // Derive centres from students
-  const centres = [...new Set(students.map(s=>s.centre).filter(Boolean))].sort();
-  const progList = [...new Set(students.map(s=>s.program).filter(Boolean))].sort();
-  // All assigned course+group combos for WA
-  const courseGroups = [];
-  COURSES.forEach(c=>{
-    const gs=[...new Set(students.map(s=>s.courses[c.key]?.group).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
-    gs.forEach(g=>courseGroups.push({key:c.key+"_"+g,label:`${getCourseLabel(c.key)} — Group ${g}`}));
-  });
-  const [pwd,setPwd] = useState({cur:"",nw:"",cf:""});
-  const [pwdMsg,setPwdMsg] = useState("");
-  const [saveMsg,setSaveMsg] = useState("");
-
+function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChange, students, onDeleteAll, cfg, onSaveCfg}) {
+  const [form, setForm]   = useState({...settings});
+  const [pwd, setPwd]     = useState({cur:"", nw:"", cf:""});
+  const [pwdMsg, setPwdMsg]   = useState("");
+  const [saveMsg, setSaveMsg] = useState("");
   const upd = (k,v) => setForm(p=>({...p,[k]:v}));
+  const activeCourses  = cfg?.courses  || COURSES;
+  const activePrograms = cfg?.programs || PROGRAMS;
+  const waGroups       = cfg?.whatsapp?.groups   || {};
+  const waPrograms     = cfg?.whatsapp?.programs || {};
+  const waCentres      = cfg?.whatsapp?.centers  || {};
+  const centres        = [...new Set(students.map(s=>s.center).filter(Boolean))].sort();
 
   const handleSaveAppearance = () => {
     onSaveSettings(form);
-    setSaveMsg("✅ Appearance saved!");
-    setTimeout(()=>setSaveMsg(""),3000);
+    setSaveMsg("✅ Appearance saved!"); setTimeout(()=>setSaveMsg(""),3000);
   };
-
   const handlePwd = () => {
-    if(pwd.cur!==adminPassword){setPwdMsg("Current password is incorrect.");return;}
-    if(pwd.nw.length<4){setPwdMsg("New password must be at least 4 characters.");return;}
-    if(pwd.nw!==pwd.cf){setPwdMsg("New passwords do not match.");return;}
+    if (pwd.cur !== adminPassword) { setPwdMsg("Current password is incorrect."); return; }
+    if (pwd.nw.length < 4)         { setPwdMsg("New password must be at least 4 characters."); return; }
+    if (pwd.nw !== pwd.cf)         { setPwdMsg("New passwords do not match."); return; }
     onPasswordChange(pwd.nw);
     setPwd({cur:"",nw:"",cf:""});
-    setPwdMsg("✅ Password changed successfully!");
-    setTimeout(()=>setPwdMsg(""),4000);
+    setPwdMsg("✅ Password changed!"); setTimeout(()=>setPwdMsg(""),4000);
   };
+  const setWa = (type, key, val) => onSaveCfg({whatsapp:{...cfg?.whatsapp, [type]:{...(cfg?.whatsapp?.[type]||{}),[key]:val}}});
 
   return (
     <div className="settings-page">
-      <div style={{marginBottom:24}}><h1>Settings</h1><p className="lead">Customise the portal, change your password, and manage data.</p></div>
+      <div style={{marginBottom:24}}><h1>Settings</h1><p className="lead">Customise the portal, manage courses and programmes, configure WhatsApp links, and change your password.</p></div>
 
-      {/* APPEARANCE */}
+      {/* ── APPEARANCE ── */}
       <div className="set-sec">
         <h3>🎨 Portal Appearance</h3>
         <p className="s-desc">Customise the header title and accent colours shown across the student portal.</p>
@@ -1519,25 +1484,25 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
           <input className="inp" style={{maxWidth:260}} value={form.portalTitle||""} onChange={e=>upd("portalTitle",e.target.value)}/>
         </div>
         <div className="set-row">
-          <div><div className="set-lbl">Portal Subtitle</div><div className="set-sub">Shown below the title</div></div>
+          <div><div className="set-lbl">Portal Subtitle</div></div>
           <input className="inp" style={{maxWidth:260}} value={form.portalSub||""} onChange={e=>upd("portalSub",e.target.value)}/>
         </div>
         <div className="set-row">
-          <div><div className="set-lbl">Accent / Primary Colour</div><div className="set-sub">Used for nav, tables, buttons</div></div>
+          <div><div className="set-lbl">Accent Colour</div><div className="set-sub">Nav, tables, buttons</div></div>
           <div className="color-row">
             <div className="color-preview" style={{background:form.accentColor||"#1b6ca8"}}/>
             <input type="color" className="inp" style={{width:70,padding:3}} value={form.accentColor||"#1b6ca8"} onChange={e=>upd("accentColor",e.target.value)}/>
           </div>
         </div>
         <div className="set-row">
-          <div><div className="set-lbl">Highlight / Gold Colour</div><div className="set-sub">Used for badges, add button</div></div>
+          <div><div className="set-lbl">Highlight / Gold</div><div className="set-sub">Badges, add button</div></div>
           <div className="color-row">
             <div className="color-preview" style={{background:form.goldColor||"#f0a500"}}/>
             <input type="color" className="inp" style={{width:70,padding:3}} value={form.goldColor||"#f0a500"} onChange={e=>upd("goldColor",e.target.value)}/>
           </div>
         </div>
         <div className="set-row">
-          <div><div className="set-lbl">Header Background</div><div className="set-sub">Top navigation bar colour</div></div>
+          <div><div className="set-lbl">Header Background</div></div>
           <div className="color-row">
             <div className="color-preview" style={{background:form.navyColor||"#0d1b2a"}}/>
             <input type="color" className="inp" style={{width:70,padding:3}} value={form.navyColor||"#0d1b2a"} onChange={e=>upd("navyColor",e.target.value)}/>
@@ -1554,81 +1519,57 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
         <div className="set-save-row"><button className="btn-save" onClick={handleSaveAppearance}>Save Appearance</button></div>
       </div>
 
-      {/* SECURITY */}
-      <div className="set-sec">
-        <h3>🔐 Security — Change Password</h3>
-        <p className="s-desc">Update the admin panel password. Use at least 4 characters.</p>
-        <div className="pwd-fields">
-          <input type="password" className="inp" placeholder="Current password" value={pwd.cur} onChange={e=>setPwd(p=>({...p,cur:e.target.value}))}/>
-          <input type="password" className="inp" placeholder="New password" value={pwd.nw} onChange={e=>setPwd(p=>({...p,nw:e.target.value}))}/>
-          <input type="password" className="inp" placeholder="Confirm new password" value={pwd.cf} onChange={e=>setPwd(p=>({...p,cf:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&handlePwd()}/>
-        </div>
-        {pwdMsg&&<p className={pwdMsg.startsWith("✅")?"msg-ok":"msg-err"}>{pwdMsg}</p>}
-        <button className="btn-save" style={{marginTop:14}} onClick={handlePwd}>Change Password</button>
-      </div>
-
-      {/* DATABASE INFO */}
-      <div className="set-sec">
-        <h3>📊 Database Info</h3>
-        <p className="s-desc">Current status of your data storage.</p>
-        <div className="set-row"><div className="set-lbl">Storage Mode</div><span className={window.firebaseReady?"badge-ok":"badge-warn"}>{window.firebaseReady?"● Firebase Cloud":"● Local Browser"}</span></div>
-        <div className="set-row"><div className="set-lbl">Total Students</div><span style={{fontWeight:700,fontFamily:"Arial,sans-serif"}}>{students.length}</span></div>
-        <div className="set-row"><div className="set-lbl">Firebase Project</div><span style={{fontSize:12,fontFamily:"Arial,sans-serif",color:"var(--sub)"}}>{window.firebaseReady?"database-ucc-it":"Not connected"}</span></div>
-      </div>
-
-
-      {/* COURSES */}
+      {/* ── COURSES ── */}
       <div className="set-sec">
         <h3>📚 Course Management</h3>
-        <p className="s-desc">Edit course display names and codes. Changes are reflected across the entire app.</p>
+        <p className="s-desc">Edit course display names and codes. Changes apply immediately across the entire app.</p>
         <table className="edit-table">
-          <thead><tr><th>Label</th><th>Code</th><th style={{width:36}}></th></tr></thead>
+          <thead><tr><th>Course Name</th><th style={{width:110}}>Code</th></tr></thead>
           <tbody>
-            {(cfg.courses||COURSES).map((c,i)=>(
+            {activeCourses.map((c,i)=>(
               <tr key={c.key}>
-                <td><input className="et-inp" value={c.label} onChange={e=>onSaveCfg({courses:(cfg.courses||COURSES).map((x,xi)=>xi===i?{...x,label:e.target.value}:x)})}/></td>
-                <td><input className="et-inp" value={c.code} onChange={e=>onSaveCfg({courses:(cfg.courses||COURSES).map((x,xi)=>xi===i?{...x,code:e.target.value}:x)})}/></td>
-                <td style={{textAlign:"center",color:"var(--sub)",fontSize:11}}>{c.key.substring(0,6)}</td>
+                <td><input className="et-inp" value={c.label} onChange={e=>onSaveCfg({courses:activeCourses.map((x,xi)=>xi===i?{...x,label:e.target.value}:x)})}/></td>
+                <td><input className="et-inp" value={c.code}  onChange={e=>onSaveCfg({courses:activeCourses.map((x,xi)=>xi===i?{...x,code:e.target.value}:x)})}/></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* PROGRAMS */}
+      {/* ── PROGRAMMES ── */}
       <div className="set-sec">
         <h3>🎓 Programme Management</h3>
         <p className="s-desc">Edit, add, or remove programme names used throughout the app.</p>
         <table className="edit-table">
           <thead><tr><th>Programme Name</th><th style={{width:36}}></th></tr></thead>
           <tbody>
-            {(cfg.programs||PROGRAMS).map((p,i)=>(
+            {activePrograms.map((p,i)=>(
               <tr key={i}>
-                <td><input className="et-inp" value={p} onChange={e=>onSaveCfg({programs:(cfg.programs||PROGRAMS).map((x,xi)=>xi===i?e.target.value:x)})}/></td>
-                <td><button className="et-btn-del" onClick={()=>onSaveCfg({programs:(cfg.programs||PROGRAMS).filter((_,xi)=>xi!==i)})}>🗑️</button></td>
+                <td><input className="et-inp" value={p} onChange={e=>onSaveCfg({programs:activePrograms.map((x,xi)=>xi===i?e.target.value:x)})}/></td>
+                <td><button className="et-btn-del" title="Remove" onClick={()=>onSaveCfg({programs:activePrograms.filter((_,xi)=>xi!==i)})}>🗑️</button></td>
               </tr>
             ))}
           </tbody>
         </table>
-        <button className="et-btn-add" onClick={()=>onSaveCfg({programs:[...(cfg.programs||PROGRAMS),"New Programme"]})}>+ Add Programme</button>
+        <button className="et-btn-add" onClick={()=>onSaveCfg({programs:[...activePrograms,"New Programme"]})}>+ Add Programme</button>
       </div>
 
-      {/* WHATSAPP LINKS */}
+      {/* ── WHATSAPP ── */}
       <div className="set-sec">
         <h3>💬 WhatsApp Group Links</h3>
-        <p className="s-desc">Add WhatsApp group invite links for course groups, programmes, and study centres. These appear as buttons on student and rep cards.</p>
+        <p className="s-desc">Paste invite links for course groups, programmes, and study centres. Links appear as buttons on student cards and rep cards throughout the portal.</p>
 
-        <div className="wa-sec-hdr">Course Groups — format: paste a link for each group</div>
-        {(cfg.courses||COURSES).map(c=>{
-          const grpNums = [...new Set(students.map(s=>s.courses[c.key]?.group).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
-          if(!grpNums.length) return null;
+        <div className="wa-sec-hdr">Course Groups</div>
+        {activeCourses.map(c=>{
+          const grps=[...new Set(students.map(s=>s.courses[c.key]?.group).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
+          if(!grps.length) return null;
           return (
             <React.Fragment key={c.key}>
-              <div style={{fontSize:12,fontWeight:700,color:"var(--navy)",margin:"10px 0 4px",fontFamily:"Arial,sans-serif"}}>{c.label} ({c.code})</div>
-              {grpNums.map(g=>(
+              <div style={{fontSize:12,fontWeight:700,color:"var(--navy)",margin:"12px 0 4px",fontFamily:"Arial,sans-serif"}}>{c.label} ({c.code})</div>
+              {grps.map(g=>(
                 <div key={g} className="wa-inp-row">
                   <div className="wa-inp-label">Group {g}</div>
-                  <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={(cfg.whatsapp?.groups||{})[c.key+"_"+g]||""} onChange={e=>onSaveCfg({whatsapp:{...cfg.whatsapp,groups:{...(cfg.whatsapp?.groups||{}),[c.key+"_"+g]:e.target.value}}})}/>
+                  <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={waGroups[c.key+"_"+g]||""} onChange={e=>setWa("groups",c.key+"_"+g,e.target.value)}/>
                 </div>
               ))}
             </React.Fragment>
@@ -1636,99 +1577,51 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
         })}
 
         <div className="wa-sec-hdr" style={{marginTop:20}}>Programmes</div>
-        {(cfg.programs||PROGRAMS).map(p=>(
+        {activePrograms.map(p=>(
           <div key={p} className="wa-inp-row">
             <div className="wa-inp-label">{p.replace("BSc ","").replace("Certificate in ","Cert. ").substring(0,22)}</div>
-            <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={(cfg.whatsapp?.programs||{})[p]||""} onChange={e=>onSaveCfg({whatsapp:{...cfg.whatsapp,programs:{...(cfg.whatsapp?.programs||{}),[p]:e.target.value}}})}/>
+            <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={waPrograms[p]||""} onChange={e=>setWa("programs",p,e.target.value)}/>
           </div>
         ))}
 
         <div className="wa-sec-hdr" style={{marginTop:20}}>Study Centres</div>
-        {[...new Set(students.map(s=>s.center).filter(Boolean))].sort().map(ctr=>(
-          <div key={ctr} className="wa-inp-row">
-            <div className="wa-inp-label">{ctr.substring(0,22)}</div>
-            <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={(cfg.whatsapp?.centers||{})[ctr]||""} onChange={e=>onSaveCfg({whatsapp:{...cfg.whatsapp,centers:{...(cfg.whatsapp?.centers||{}),[ctr]:e.target.value}}})}/>
-          </div>
-        ))}
-        {[...new Set(students.map(s=>s.center).filter(Boolean))].length===0&&<p style={{fontSize:12,color:"var(--sub)",fontFamily:"Arial,sans-serif"}}>No study centres set yet. Add a "Study Centre" to student profiles to enable this section.</p>}
+        {centres.length===0
+          ? <p style={{fontSize:12,color:"var(--sub)",fontFamily:"Arial,sans-serif"}}>No centres set yet — add a Study Centre on any student's profile to unlock this.</p>
+          : centres.map(c=>(
+              <div key={c} className="wa-inp-row">
+                <div className="wa-inp-label">{c.substring(0,22)}</div>
+                <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={waCentres[c]||""} onChange={e=>setWa("centers",c,e.target.value)}/>
+              </div>
+            ))
+        }
       </div>
 
-      {/* META EDITOR */}
+      {/* ── SECURITY ── */}
       <div className="set-sec">
-        <h3>📝 Programmes &amp; Courses</h3>
-        <p className="s-desc">Rename programmes and courses as they appear throughout the portal. Keys stay the same — only display names change.</p>
-        <div style={{display:"flex",gap:6,marginBottom:14}}>
-          {[["programmes","Programmes"],["courses","Courses"]].map(([t,l])=>(
-            <button key={t} className={"btn-sm"+(metaTab===t?" s":" c")} onClick={()=>setMetaTab(t)}>{l}</button>
-          ))}
+        <h3>🔐 Change Admin Password</h3>
+        <p className="s-desc">Update the admin panel password. Minimum 4 characters.</p>
+        <div className="pwd-fields">
+          <input type="password" className="inp" placeholder="Current password" value={pwd.cur} onChange={e=>setPwd(p=>({...p,cur:e.target.value}))}/>
+          <input type="password" className="inp" placeholder="New password"     value={pwd.nw}  onChange={e=>setPwd(p=>({...p,nw:e.target.value}))}/>
+          <input type="password" className="inp" placeholder="Confirm new password" value={pwd.cf} onChange={e=>setPwd(p=>({...p,cf:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&handlePwd()}/>
         </div>
-        {metaTab==="programmes"&&(
-          <div className="meta-list">
-            {metaPrograms.map((p,i)=>(
-              <div key={i} className="meta-row">
-                <input className="meta-inp" value={p.display} onChange={e=>{const n=[...metaPrograms];n[i]={...n[i],display:e.target.value};setMetaPrograms(n);}} placeholder={p.orig}/>
-                <span style={{fontSize:11,color:"var(--sub)",fontFamily:"Arial,sans-serif",flexShrink:0}}>← {p.orig.replace("BSc ","").replace("BEd ","").replace("Certificate in ","")}</span>
-              </div>
-            ))}
-          </div>
-        )}
-        {metaTab==="courses"&&(
-          <div className="meta-list">
-            {metaCourses.map((c,i)=>(
-              <div key={c.key} className="meta-row">
-                <input className="meta-inp code" value={c.code} onChange={e=>{const n=[...metaCourses];n[i]={...n[i],code:e.target.value};setMetaCourses(n);}} placeholder="Code"/>
-                <input className="meta-inp" value={c.label} onChange={e=>{const n=[...metaCourses];n[i]={...n[i],label:e.target.value};setMetaCourses(n);}} placeholder="Course name"/>
-                <span style={{fontSize:11,color:"var(--sub)",fontFamily:"Arial,sans-serif",flexShrink:0,minWidth:80}}>{COURSES.find(x=>x.key===c.key)?.code}</span>
-              </div>
-            ))}
-          </div>
-        )}
-        {metaMsg&&<p className="msg-ok" style={{marginTop:10}}>{metaMsg}</p>}
-        <div className="set-save-row"><button className="btn-save" onClick={saveMeta}>Save Names</button></div>
+        {pwdMsg&&<p className={pwdMsg.startsWith("✅")?"msg-ok":"msg-err"}>{pwdMsg}</p>}
+        <button className="btn-save" style={{marginTop:14}} onClick={handlePwd}>Change Password</button>
       </div>
 
-      {/* WHATSAPP MANAGER */}
+      {/* ── DATABASE INFO ── */}
       <div className="set-sec">
-        <h3>💬 WhatsApp Group Links</h3>
-        <p className="s-desc">Add WhatsApp group invite links for course groups, programmes, and study centres. These appear as buttons throughout the portal.</p>
-        <div className="wa-section">
-          <h4>Course Groups</h4>
-          {courseGroups.slice(0,30).map(({key,label})=>(
-            <div key={key} className="wa-row">
-              <div className="wa-lbl" title={label}>{label.length>28?label.substring(0,28)+"…":label}</div>
-              <input className={"wa-inp"+(waLinks.groups?.[key]?" filled":"")} value={waLinks.groups?.[key]||""} onChange={e=>updateWa("groups",key,e.target.value)} placeholder="https://chat.whatsapp.com/…"/>
-            </div>
-          ))}
-          {courseGroups.length>30&&<p style={{fontSize:12,color:"var(--sub)",fontFamily:"Arial,sans-serif",marginTop:6}}>Showing first 30 of {courseGroups.length} groups. Use the Wizard to add links for the rest.</p>}
-        </div>
-        <div className="wa-section">
-          <h4>Programmes</h4>
-          {progList.map(p=>(
-            <div key={p} className="wa-row">
-              <div className="wa-lbl">{p.replace("BSc ","").replace("Certificate in ","Cert. ").replace("BEd ","BEd ")}</div>
-              <input className={"wa-inp"+(waLinks.programmes?.[p]?" filled":"")} value={waLinks.programmes?.[p]||""} onChange={e=>updateWa("programmes",p,e.target.value)} placeholder="https://chat.whatsapp.com/…"/>
-            </div>
-          ))}
-        </div>
-        {centres.length>0&&(
-          <div className="wa-section">
-            <h4>Study Centres</h4>
-            {centres.map(c=>(
-              <div key={c} className="wa-row">
-                <div className="wa-lbl">{c}</div>
-                <input className={"wa-inp"+(waLinks.centres?.[c]?" filled":"")} value={waLinks.centres?.[c]||""} onChange={e=>updateWa("centres",c,e.target.value)} placeholder="https://chat.whatsapp.com/…"/>
-              </div>
-            ))}
-          </div>
-        )}
-        {waMsg&&<p className="msg-ok" style={{marginTop:10}}>{waMsg}</p>}
-        <div className="set-save-row"><button className="btn-save" style={{background:"#25D366"}} onClick={saveWa}>💾 Save WhatsApp Links</button></div>
+        <h3>📊 Database Info</h3>
+        <p className="s-desc">Current storage status.</p>
+        <div className="set-row"><div className="set-lbl">Storage</div><span className={window.firebaseReady?"badge-ok":"badge-warn"}>{window.firebaseReady?"● Firebase Cloud":"● Local Browser"}</span></div>
+        <div className="set-row"><div className="set-lbl">Students</div><span style={{fontWeight:700,fontFamily:"Arial,sans-serif"}}>{students.length}</span></div>
+        <div className="set-row"><div className="set-lbl">Firebase Project</div><span style={{fontSize:12,fontFamily:"Arial,sans-serif",color:"var(--sub)"}}>{window.firebaseReady?"database-ucc-it":"Not connected"}</span></div>
       </div>
 
-      {/* DANGER ZONE */}
+      {/* ── DANGER ── */}
       <div className="set-sec set-danger">
         <h3>⚠️ Danger Zone</h3>
-        <p className="s-desc">These actions are irreversible. Proceed with extreme caution.</p>
+        <p className="s-desc">These actions are irreversible.</p>
         <div className="set-row">
           <div><div className="set-lbl">Clear Entire Database</div><div className="set-sub">Permanently deletes all {students.length} student records</div></div>
           <button className="btn-danger" onClick={()=>{if(window.confirm(`Delete ALL ${students.length} student records? This CANNOT be undone.`))onDeleteAll();}}>Delete All Records</button>
@@ -1737,7 +1630,6 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
     </div>
   );
 }
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // NOTICEBOARD — PORTAL VIEW
