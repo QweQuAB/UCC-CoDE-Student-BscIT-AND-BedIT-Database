@@ -262,6 +262,45 @@
     .preview-mk{padding:4px 7px;border-radius:4px;font-size:11px;font-weight:900;font-family:Arial,sans-serif;}
     .preview-title{color:#fff;font-size:13px;font-weight:700;}
     .preview-sub{color:#8899bb;font-size:11px;font-family:Arial,sans-serif;}
+
+    /* ── REP BOARD ── */
+    .rep-board{background:linear-gradient(135deg,var(--navy) 0%,#1a3a5c 100%);border-radius:14px;padding:22px 24px;margin-bottom:28px;}
+    .rep-board-title{color:var(--gold);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;font-family:Arial,sans-serif;}
+    .rep-cards-row{display:flex;gap:14px;flex-wrap:wrap;}
+    .rep-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px;display:flex;align-items:flex-start;gap:14px;min-width:240px;max-width:320px;flex:1;cursor:pointer;transition:all .15s;}
+    .rep-card:hover{background:rgba(255,255,255,.14);border-color:var(--gold);transform:translateY(-2px);}
+    .rep-av{width:44px;height:44px;border-radius:50%;background:var(--gold);color:var(--navy);font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:Arial,sans-serif;}
+    .rep-info{flex:1;min-width:0;}
+    .rep-name{color:#fff;font-weight:700;font-size:14px;margin-bottom:3px;}
+    .rep-badge{background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:5px;font-family:Arial,sans-serif;text-transform:uppercase;letter-spacing:.5px;}
+    .rep-prog{color:#8899bb;font-size:11px;font-family:Arial,sans-serif;margin-bottom:6px;}
+    .rep-contacts{display:flex;flex-direction:column;gap:3px;}
+    .rep-link{color:#a8d4f5;font-size:11px;font-family:Arial,sans-serif;text-decoration:none;}
+    .rep-link:hover{color:var(--gold);}
+    .rep-wa{background:#25d366;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-decoration:none;display:inline-block;margin-top:4px;font-family:Arial,sans-serif;}
+    /* ── STUDENT CARD additions ── */
+    .card-contacts{display:flex;gap:8px;flex-wrap:wrap;padding:8px 17px 0;}
+    .cc-link{color:var(--teal);font-size:11px;font-family:Arial,sans-serif;text-decoration:none;}
+    .cc-link:hover{text-decoration:underline;}
+    .wa-btn{background:#25d366;color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;text-decoration:none;font-family:Arial,sans-serif;}
+    /* ── STUDENT MODAL ROLES TAB ── */
+    .role-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+    .role-row:last-of-type{border-bottom:none;}
+    /* ── SETTINGS: COURSES / WHATSAPP ── */
+    .edit-table{width:100%;border-collapse:collapse;font-size:13px;font-family:Arial,sans-serif;margin-top:12px;}
+    .edit-table th{text-align:left;padding:8px 10px;font-size:11px;color:var(--sub);text-transform:uppercase;border-bottom:2px solid var(--border);}
+    .edit-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    .edit-table tr:last-child td{border-bottom:none;}
+    .et-inp{width:100%;border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:13px;font-family:Arial,sans-serif;outline:none;}
+    .et-inp:focus{border-color:var(--teal);}
+    .et-btn-add{background:var(--teal);color:#fff;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-family:Arial,sans-serif;font-weight:600;cursor:pointer;margin-top:12px;}
+    .et-btn-del{background:none;border:none;color:var(--red);font-size:15px;cursor:pointer;padding:0 4px;}
+    .wa-inp-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+    .wa-inp-row:last-child{border-bottom:none;}
+    .wa-inp-label{font-size:12px;font-weight:600;font-family:Arial,sans-serif;color:var(--text);min-width:120px;flex-shrink:0;}
+    .wa-inp{flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:Arial,sans-serif;outline:none;}
+    .wa-inp:focus{border-color:#25d366;}
+    .wa-sec-hdr{font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin:14px 0 6px;font-family:Arial,sans-serif;border-bottom:1px solid var(--border);padding-bottom:4px;}
   </style>
 </head>
 <body>
@@ -344,7 +383,7 @@ const ADMIN_PASSWORD = "StAnne2025"; // ← Change this to something personal
 // ─────────────────────────────────────────────────────────────────────────────
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function emptyCourses() { const c={}; COURSES.forEach(x=>{c[x.key]={group:"",topic:""}}); return c; }
-function emptyStudent() { return {id:uid(),name:"",program:"BSc Information Technology",indexNumber:"",courses:emptyCourses()}; }
+function emptyStudent() { return {id:uid(),name:"",program:"BSc Information Technology",indexNumber:"",phone:"",email:"",center:"",repRoles:[],courses:emptyCourses()}; }
 
 // LOCAL FALLBACK (when Firebase not configured)
 const LS_KEY = "ucc_students_local";
@@ -532,11 +571,14 @@ function useStudents() {
 // ─────────────────────────────────────────────────────────────────────────────
 // STUDENT MODAL
 // ─────────────────────────────────────────────────────────────────────────────
-function StudentModal({student,onSave,onClose}){
-  const [form,setForm]=useState(()=>JSON.parse(JSON.stringify(student)));
+function StudentModal({student,onSave,onClose,courses}){
+  const [form,setForm]=useState(()=>JSON.parse(JSON.stringify({phone:"",email:"",center:"",repRoles:[],...student})));
   const [tab,setTab]=useState("info");
   const upd=(f,v)=>setForm(p=>({...p,[f]:v}));
   const updC=(ck,f,v)=>setForm(p=>({...p,courses:{...p.courses,[ck]:{...p.courses[ck],[f]:v}}}));
+  const updRole=(i,field,val)=>setForm(p=>({...p,repRoles:p.repRoles.map((r,ri)=>ri===i?{...r,[field]:val}:r)}));
+  const addRole=()=>setForm(p=>({...p,repRoles:[...(p.repRoles||[]),{type:"courseRep",courseKey:(courses||COURSES)[0].key,label:""}]}));
+  const delRole=(i)=>setForm(p=>({...p,repRoles:p.repRoles.filter((_,ri)=>ri!==i)}));
   return (
     <div className="overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
       <div className="modal">
@@ -545,7 +587,7 @@ function StudentModal({student,onSave,onClose}){
           <button className="x-btn" onClick={onClose}>✕</button>
         </div>
         <div className="m-tabs">
-          {[["info","👤 Student Info"],["courses","📚 Course Groups"]].map(([k,l])=>(
+          {[["info","👤 Student Info"],["courses","📚 Course Groups"],["roles","🎖️ Roles"]].map(([k,l])=>(
             <button key={k} className={"m-tab"+(tab===k?" on":"")} onClick={()=>setTab(k)}>{l}</button>
           ))}
         </div>
@@ -555,11 +597,23 @@ function StudentModal({student,onSave,onClose}){
               <label className="lbl">Full Name <span style={{color:"var(--red)"}}>*</span></label>
               <input className="inp" value={form.name} onChange={e=>upd("name",e.target.value)} placeholder="Full name"/>
               <label className="lbl">Index / Student Number</label>
-              <input className="inp" value={form.indexNumber} onChange={e=>upd("indexNumber",e.target.value)} placeholder="e.g. UCC/CoDE/IT/001"/>
+              <input className="inp" value={form.indexNumber} onChange={e=>upd("indexNumber",e.target.value)} placeholder="e.g. BSCIT/CR/30/25/0009"/>
               <label className="lbl">Programme</label>
               <select className="inp" value={form.program} onChange={e=>upd("program",e.target.value)}>
                 {PROGRAMS.map(p=><option key={p}>{p}</option>)}
               </select>
+              <label className="lbl">Study Centre / Campus</label>
+              <input className="inp" value={form.center||""} onChange={e=>upd("center",e.target.value)} placeholder="e.g. UCC Main Campus, Online, Papafio Hills"/>
+              <div style={{display:"flex",gap:12}}>
+                <div style={{flex:1}}>
+                  <label className="lbl">Phone Number</label>
+                  <input className="inp" value={form.phone||""} onChange={e=>upd("phone",e.target.value)} placeholder="+233 XX XXX XXXX"/>
+                </div>
+                <div style={{flex:1}}>
+                  <label className="lbl">Email Address</label>
+                  <input className="inp" value={form.email||""} onChange={e=>upd("email",e.target.value)} placeholder="email@example.com"/>
+                </div>
+              </div>
             </div>
           )}
           {tab==="courses" && COURSES.map(c=>(
@@ -580,8 +634,86 @@ function StudentModal({student,onSave,onClose}){
         </div>
         <div className="modal-foot">
           <button className="btn-cancel" onClick={onClose}>Cancel</button>
+          {tab==="roles" && (
+            <div>
+              <p className="lead" style={{marginBottom:16}}>Assign representative roles to this student. They will appear in the Leadership Board on the student portal.</p>
+              {(form.repRoles||[]).length===0&&<div className="empty" style={{padding:"24px 0",fontSize:13}}>No roles assigned. Click below to add one.</div>}
+              {(form.repRoles||[]).map((role,i)=>(
+                <div key={i} className="role-row">
+                  <select className="inp sm-inp" style={{flex:"0 0 180px"}} value={role.type} onChange={e=>updRole(i,"type",e.target.value)}>
+                    <option value="courseRep">Course Representative</option>
+                    <option value="centerRep">Centre Representative</option>
+                    <option value="programRep">Programme Representative</option>
+                    <option value="groupRep">Group Representative</option>
+                  </select>
+                  {(role.type==="courseRep"||role.type==="groupRep")&&(
+                    <select className="inp sm-inp" style={{flex:"0 0 160px"}} value={role.courseKey||""} onChange={e=>updRole(i,"courseKey",e.target.value)}>
+                      {(courses||COURSES).map(c=><option key={c.key} value={c.key}>{c.code}</option>)}
+                    </select>
+                  )}
+                  <input className="inp sm-inp" style={{flex:1}} value={role.label||""} onChange={e=>updRole(i,"label",e.target.value)} placeholder="Custom label (optional)"/>
+                  <button className="btn-del" style={{padding:"4px 10px"}} onClick={()=>delRole(i)}>🗑️</button>
+                </div>
+              ))}
+              <button className="btn-add" style={{marginTop:14,fontSize:12,padding:"7px 14px"}} onClick={addRole}>+ Add Role</button>
+            </div>
+          )}
           <button className="btn-save" onClick={()=>{if(!form.name.trim()){alert("Name is required.");return;}onSave(form);}}>💾 Save Student</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REP CARD + REP BOARD
+// ─────────────────────────────────────────────────────────────────────────────
+function RepCard({student, role, courses, whatsapp, onNavCourse, onNavProg}) {
+  const initials = student.name.split(" ").map(w=>w[0]||"").slice(0,2).join("").toUpperCase();
+  const course = role.courseKey ? (courses||COURSES).find(c=>c.key===role.courseKey) : null;
+  const roleName = role.label || (
+    role.type==="courseRep" ? `${course?.code||""} Course Rep` :
+    role.type==="centerRep" ? `Centre Rep${student.center?" — "+student.center:""}` :
+    role.type==="programRep" ? "Programme Rep" :
+    role.type==="groupRep" ? `Group Rep${course?" — "+course.code:""}` : "Student Rep"
+  );
+  const waGroup = whatsapp?.groups?.[`${role.courseKey||""}_${student.courses?.[role.courseKey]?.group||""}`];
+  const waProg  = whatsapp?.programs?.[student.program||""];
+  const waCentr = whatsapp?.centers?.[student.center||""];
+  const waLink  = waGroup || waProg || waCentr;
+  const handleClick = () => {
+    if(role.type==="courseRep"&&role.courseKey&&onNavCourse) onNavCourse(role.courseKey);
+    else if((role.type==="programRep"||role.type==="centerRep")&&onNavProg) onNavProg(student.program);
+  };
+  return (
+    <div className="rep-card" onClick={handleClick} title="Click to view group/programme">
+      <div className="rep-av">{initials}</div>
+      <div className="rep-info">
+        <div className="rep-name">{student.name}</div>
+        <div className="rep-badge">{roleName}</div>
+        {student.center&&<div className="rep-prog">{student.center}</div>}
+        <div className="rep-prog">{(student.program||"").replace("BSc ","").replace("BEd ","").replace("Certificate in ","Cert. ")}</div>
+        <div className="rep-contacts">
+          {student.phone&&<a href={"tel:"+student.phone} className="rep-link" onClick={e=>e.stopPropagation()}>📞 {student.phone}</a>}
+          {student.email&&<a href={"mailto:"+student.email} className="rep-link" onClick={e=>e.stopPropagation()}>✉️ {student.email}</a>}
+          {waLink&&<a href={waLink} target="_blank" rel="noopener noreferrer" className="rep-wa" onClick={e=>e.stopPropagation()}>💬 WhatsApp</a>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RepBoard({students, courses, whatsapp, onNavCourse, onNavProg}) {
+  const reps = students.filter(s=>s.repRoles&&s.repRoles.length>0);
+  if(!reps.length) return null;
+  return (
+    <div className="rep-board">
+      <div className="rep-board-title">🎖️ Student Representatives</div>
+      <div className="rep-cards-row">
+        {reps.flatMap(s=>(s.repRoles||[]).map((role,ri)=>(
+          <RepCard key={s.id+"_"+ri} student={s} role={role} courses={courses} whatsapp={whatsapp} onNavCourse={onNavCourse} onNavProg={onNavProg}/>
+        )))}
       </div>
     </div>
   );
@@ -590,7 +722,7 @@ function StudentModal({student,onSave,onClose}){
 // ─────────────────────────────────────────────────────────────────────────────
 // STUDENT CARD
 // ─────────────────────────────────────────────────────────────────────────────
-function StudentCard({student}){
+function StudentCard({student, whatsapp}){
   const [open,setOpen]=useState(false);
   const assigned=COURSES.filter(c=>student.courses?.[c.key]?.group);
   return (
@@ -605,7 +737,13 @@ function StudentCard({student}){
         <div style={{color:"var(--sub)",transition:"transform .2s",transform:open?"rotate(180deg)":"rotate(0)"}}><ChevIco/></div>
       </div>
       {open && (
-        <div className="card-body">
+        {(student.phone||student.email)&&(
+      <div className="card-contacts">
+        {student.phone&&<a href={"tel:"+student.phone} className="cc-link" onClick={e=>e.stopPropagation()}>📞 {student.phone}</a>}
+        {student.email&&<a href={"mailto:"+student.email} className="cc-link" onClick={e=>e.stopPropagation()}>✉️ {student.email}</a>}
+      </div>
+    )}
+    <div className="card-body">
           {assigned.length===0 && <p className="lead" style={{paddingTop:10}}>No groups assigned yet.</p>}
           {assigned.map(c=>{
             const d=student.courses[c.key];
@@ -629,7 +767,7 @@ function StudentCard({student}){
 // ─────────────────────────────────────────────────────────────────────────────
 // COURSE VIEW
 // ─────────────────────────────────────────────────────────────────────────────
-function CourseView({students}){
+function CourseView({students, whatsapp, courses}){
   const [active,setActive]=useState(COURSES[0].key);
   const [grpFilter,setGrpFilter]=useState("all");
   const [search,setSearch]=useState("");
@@ -1089,7 +1227,7 @@ function WizardPanel({students, onSaveGroupTopic, onSaveStudent}) {
 // ─────────────────────────────────────────────────────────────────────────────
 // SETTINGS PANEL
 // ─────────────────────────────────────────────────────────────────────────────
-function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChange, students, onDeleteAll}) {
+function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChange, students, onDeleteAll, cfg, onSaveCfg}) {
   const [form,setForm] = useState({...settings});
   const [pwd,setPwd] = useState({cur:"",nw:"",cf:""});
   const [pwdMsg,setPwdMsg] = useState("");
@@ -1183,6 +1321,83 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
         <div className="set-row"><div className="set-lbl">Firebase Project</div><span style={{fontSize:12,fontFamily:"Arial,sans-serif",color:"var(--sub)"}}>{window.firebaseReady?"database-ucc-it":"Not connected"}</span></div>
       </div>
 
+
+      {/* COURSES */}
+      <div className="set-sec">
+        <h3>📚 Course Management</h3>
+        <p className="s-desc">Edit course display names and codes. Changes are reflected across the entire app.</p>
+        <table className="edit-table">
+          <thead><tr><th>Label</th><th>Code</th><th style={{width:36}}></th></tr></thead>
+          <tbody>
+            {(cfg.courses||COURSES).map((c,i)=>(
+              <tr key={c.key}>
+                <td><input className="et-inp" value={c.label} onChange={e=>onSaveCfg({courses:(cfg.courses||COURSES).map((x,xi)=>xi===i?{...x,label:e.target.value}:x)})}/></td>
+                <td><input className="et-inp" value={c.code} onChange={e=>onSaveCfg({courses:(cfg.courses||COURSES).map((x,xi)=>xi===i?{...x,code:e.target.value}:x)})}/></td>
+                <td style={{textAlign:"center",color:"var(--sub)",fontSize:11}}>{c.key.substring(0,6)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* PROGRAMS */}
+      <div className="set-sec">
+        <h3>🎓 Programme Management</h3>
+        <p className="s-desc">Edit, add, or remove programme names used throughout the app.</p>
+        <table className="edit-table">
+          <thead><tr><th>Programme Name</th><th style={{width:36}}></th></tr></thead>
+          <tbody>
+            {(cfg.programs||PROGRAMS).map((p,i)=>(
+              <tr key={i}>
+                <td><input className="et-inp" value={p} onChange={e=>onSaveCfg({programs:(cfg.programs||PROGRAMS).map((x,xi)=>xi===i?e.target.value:x)})}/></td>
+                <td><button className="et-btn-del" onClick={()=>onSaveCfg({programs:(cfg.programs||PROGRAMS).filter((_,xi)=>xi!==i)})}>🗑️</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button className="et-btn-add" onClick={()=>onSaveCfg({programs:[...(cfg.programs||PROGRAMS),"New Programme"]})}>+ Add Programme</button>
+      </div>
+
+      {/* WHATSAPP LINKS */}
+      <div className="set-sec">
+        <h3>💬 WhatsApp Group Links</h3>
+        <p className="s-desc">Add WhatsApp group invite links for course groups, programmes, and study centres. These appear as buttons on student and rep cards.</p>
+
+        <div className="wa-sec-hdr">Course Groups — format: paste a link for each group</div>
+        {(cfg.courses||COURSES).map(c=>{
+          const grpNums = [...new Set(students.map(s=>s.courses[c.key]?.group).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
+          if(!grpNums.length) return null;
+          return (
+            <React.Fragment key={c.key}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--navy)",margin:"10px 0 4px",fontFamily:"Arial,sans-serif"}}>{c.label} ({c.code})</div>
+              {grpNums.map(g=>(
+                <div key={g} className="wa-inp-row">
+                  <div className="wa-inp-label">Group {g}</div>
+                  <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={(cfg.whatsapp?.groups||{})[c.key+"_"+g]||""} onChange={e=>onSaveCfg({whatsapp:{...cfg.whatsapp,groups:{...(cfg.whatsapp?.groups||{}),[c.key+"_"+g]:e.target.value}}})}/>
+                </div>
+              ))}
+            </React.Fragment>
+          );
+        })}
+
+        <div className="wa-sec-hdr" style={{marginTop:20}}>Programmes</div>
+        {(cfg.programs||PROGRAMS).map(p=>(
+          <div key={p} className="wa-inp-row">
+            <div className="wa-inp-label">{p.replace("BSc ","").replace("Certificate in ","Cert. ").substring(0,22)}</div>
+            <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={(cfg.whatsapp?.programs||{})[p]||""} onChange={e=>onSaveCfg({whatsapp:{...cfg.whatsapp,programs:{...(cfg.whatsapp?.programs||{}),[p]:e.target.value}}})}/>
+          </div>
+        ))}
+
+        <div className="wa-sec-hdr" style={{marginTop:20}}>Study Centres</div>
+        {[...new Set(students.map(s=>s.center).filter(Boolean))].sort().map(ctr=>(
+          <div key={ctr} className="wa-inp-row">
+            <div className="wa-inp-label">{ctr.substring(0,22)}</div>
+            <input className="wa-inp" placeholder="https://chat.whatsapp.com/..." value={(cfg.whatsapp?.centers||{})[ctr]||""} onChange={e=>onSaveCfg({whatsapp:{...cfg.whatsapp,centers:{...(cfg.whatsapp?.centers||{}),[ctr]:e.target.value}}})}/>
+          </div>
+        ))}
+        {[...new Set(students.map(s=>s.center).filter(Boolean))].length===0&&<p style={{fontSize:12,color:"var(--sub)",fontFamily:"Arial,sans-serif"}}>No study centres set yet. Add a "Study Centre" to student profiles to enable this section.</p>}
+      </div>
+
       {/* DANGER ZONE */}
       <div className="set-sec set-danger">
         <h3>⚠️ Danger Zone</h3>
@@ -1199,7 +1414,7 @@ function SettingsPanel({settings, onSaveSettings, adminPassword, onPasswordChang
 // ─────────────────────────────────────────────────────────────────────────────
 // ADMIN PANEL
 // ─────────────────────────────────────────────────────────────────────────────
-function AdminPanel({students,onAdd,onEdit,onDelete,onImport,onSaveStudent,onSaveGroupTopic,settings,onSaveSettings,adminPassword,onPasswordChange,onDeleteAll}){
+function AdminPanel({students,onAdd,onEdit,onDelete,onImport,onSaveStudent,onSaveGroupTopic,settings,onSaveSettings,adminPassword,onPasswordChange,onDeleteAll,cfg,onSaveCfg}){
   const [adminTab,setAdminTab] = useState("dashboard");
   const [search,setSearch]=useState("");
   const [sortBy,setSortBy]=useState("name");
@@ -1332,7 +1547,7 @@ function AdminPanel({students,onAdd,onEdit,onDelete,onImport,onSaveStudent,onSav
 
       {adminTab==="groups"&&<GroupsManager students={students} onSaveGroupTopic={onSaveGroupTopic} onSaveStudent={onSaveStudent}/>}
       {adminTab==="wizard"&&<WizardPanel students={students} onSaveGroupTopic={onSaveGroupTopic} onSaveStudent={onSaveStudent}/>}
-      {adminTab==="settings"&&<SettingsPanel settings={settings} onSaveSettings={onSaveSettings} adminPassword={adminPassword} onPasswordChange={onPasswordChange} students={students} onDeleteAll={onDeleteAll}/>}
+      {adminTab==="settings"&&<SettingsPanel settings={settings} onSaveSettings={onSaveSettings} adminPassword={adminPassword} onPasswordChange={onPasswordChange} students={students} onDeleteAll={onDeleteAll} cfg={cfg} onSaveCfg={onSaveCfg}/>}
     </div>
   );
 }
@@ -1342,6 +1557,9 @@ function AdminPanel({students,onAdd,onEdit,onDelete,onImport,onSaveStudent,onSav
 // ─────────────────────────────────────────────────────────────────────────────
 function App(){
   const {students,loading,saving,dbMode,saveStudent,deleteStudent,importStudents,saveGroupTopic} = useStudents();
+  const appCfg = useAppConfig();
+  const activeCourses = appCfg.cfg.courses || COURSES;
+  const activePrograms = appCfg.cfg.programs || PROGRAMS;
   const [view,setView]=useState("portal");
   const [authed,setAuthed]=useState(false);
   const [pw,setPw]=useState("");
@@ -1434,6 +1652,10 @@ function App(){
         {view==="portal" && (
           <div>
             <div style={{marginBottom:24}}><h1>Student Groups &amp; Assignments</h1><p className="lead">Find your name, group number, and research topic for each course. Click a card to expand.</p></div>
+            <RepBoard students={students} courses={activeCourses} whatsapp={appCfg.cfg.whatsapp}
+              onNavCourse={ck=>{ setView("courses"); }}
+              onNavProg={pg=>{ setProgFilter(pg||"all"); }}
+            />
             <div className="filter-bar">
               <div className="search-wrap">
                 <SearchIco/>
@@ -1442,15 +1664,15 @@ function App(){
               </div>
               <select className="sel" value={progFilter} onChange={e=>setProgFilter(e.target.value)}>
                 <option value="all">All Programmes</option>
-                {PROGRAMS.map(p=><option key={p}>{p}</option>)}
+                {activePrograms.map(p=><option key={p}>{p}</option>)}
               </select>
             </div>
             <p className="stat"><b>{portalList.length}</b> of <b>{students.length}</b> students shown</p>
-            {portalList.length===0?<div className="empty">No students match your search.</div>:<div className="card-grid">{portalList.map(s=><StudentCard key={s.id} student={s}/>)}</div>}
+            {portalList.length===0?<div className="empty">No students match your search.</div>:<div className="card-grid">{portalList.map(s=><StudentCard key={s.id} student={s} whatsapp={appCfg.cfg.whatsapp}/>)}</div>}
           </div>
         )}
 
-        {view==="courses" && <CourseView students={students}/>}
+        {view==="courses" && <CourseView students={students} whatsapp={appCfg.cfg.whatsapp} courses={activeCourses}/>}
 
         {view==="login" && (
           <div className="login-wrap">
@@ -1479,11 +1701,13 @@ function App(){
             adminPassword={adminPassword}
             onPasswordChange={handlePasswordChange}
             onDeleteAll={handleDeleteAll}
+            cfg={appCfg.cfg}
+            onSaveCfg={appCfg.saveCfg}
           />
         )}
       </main>
 
-      {modal && <StudentModal student={modal} onSave={handleSave} onClose={()=>setModal(null)}/>}
+      {modal && <StudentModal student={modal} onSave={handleSave} onClose={()=>setModal(null)} courses={appCfg.cfg.courses||COURSES}/>}
 
       {saving && (
         <div className="saving-toast">
