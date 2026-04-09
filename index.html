@@ -1858,7 +1858,7 @@ function NoticesAdmin({notices, onSave, onDelete}) {
 // ─────────────────────────────────────────────────────────────────────────────
 // ADMIN PANEL
 // ─────────────────────────────────────────────────────────────────────────────
-function AdminPanel({students,onAdd,onEdit,onDelete,onImport,onSaveStudent,onSaveGroupTopic,settings,onSaveSettings,adminPassword,onPasswordChange,onDeleteAll,onSaveMeta,onSaveWaLinks}){
+function AdminPanel({students,onAdd,onEdit,onDelete,onImport,onSaveStudent,onSaveGroupTopic,settings,onSaveSettings,adminPassword,onPasswordChange,onDeleteAll,onSaveMeta,onSaveWaLinks,notices,onSaveNotice,onDeleteNotice}){
   const [adminTab,setAdminTab] = useState("dashboard");
   const [search,setSearch]=useState("");
   const [sortBy,setSortBy]=useState("name");
@@ -1994,7 +1994,8 @@ function AdminPanel({students,onAdd,onEdit,onDelete,onImport,onSaveStudent,onSav
 
       {adminTab==="groups"&&<GroupsManager students={students} onSaveGroupTopic={onSaveGroupTopic} onSaveStudent={onSaveStudent}/>}
       {adminTab==="wizard"&&<WizardPanel students={students} onSaveGroupTopic={onSaveGroupTopic} onSaveStudent={onSaveStudent}/>}
-      {adminTab==="settings"&&<SettingsPanel settings={settings} onSaveSettings={onSaveSettings} adminPassword={adminPassword} onPasswordChange={onPasswordChange} students={students} onDeleteAll={onDeleteAll} onSaveMeta={onSaveMeta} onSaveWaLinks={onSaveWaLinks}/>}
+      {adminTab==="notices"&&<NoticesAdmin notices={notices||[]} onSave={onSaveNotice} onDelete={onDeleteNotice}/>}
+            {adminTab==="settings"&&<SettingsPanel settings={settings} onSaveSettings={onSaveSettings} adminPassword={adminPassword} onPasswordChange={onPasswordChange} students={students} onDeleteAll={onDeleteAll} onSaveMeta={onSaveMeta} onSaveWaLinks={onSaveWaLinks}/>}
     </div>
   );
 }
@@ -2174,7 +2175,10 @@ function App(){
             onDeleteAll={handleDeleteAll}
             onSaveMeta={handleSaveMeta}
             onSaveWaLinks={handleSaveWaLinks}
-                  />
+            notices={notices}
+            onSaveNotice={saveNotice}
+            onDeleteNotice={deleteNotice}
+          />
         )}
       </main>
 
